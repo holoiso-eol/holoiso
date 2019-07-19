@@ -1,0 +1,10 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+indent_style = tab
+indent_size = 8
+charset = utf-8
+# To avoid editing too much in commits
+trim_trailing_whitespace = false
