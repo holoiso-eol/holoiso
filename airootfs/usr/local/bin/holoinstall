@@ -17,7 +17,7 @@ read "?WARNING: This drive is going to be erased fully. Press enter to continue,
 DEVICE="/dev/${DRIVEDEVICE}"
 
 INSTALLDEVICE="${DEVICE}"
-echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop)"
+echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
 if [ $? -eq 0 ]; then
     INSTALLDEVICE="${DEVICE}p"
 fi
