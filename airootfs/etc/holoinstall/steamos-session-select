@@ -1,2 +1,3 @@
 #!/bin/bash
-exec pkill -f "gamescope*"
+exec sudo pkill -f "gamesc*"
+exec loginctl terminate-session $XDG_SESSION_ID

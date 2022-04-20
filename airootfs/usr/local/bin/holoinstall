@@ -70,10 +70,17 @@ arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 # Installs DE
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
 # Installs more stuff
+echo "Installing Bluetooth dependencies..."
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} bluez bluez-utils cheeze blueman bluez-qt
 arch-chroot ${HOLO_INSTALL_DIR} systemctl enable bluetooth
 arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
+echo "Configuring Steam Deck UI by default..."
+mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
+echo "[Autologin]
+User=${USER}
+Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
 # Services
+echo "Setting up locale..."
 echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
 arch-chroot ${HOLO_INSTALL_DIR} locale-gen
 echo "LANG=$(echo ${SYSTEM_LOCALE} | cut -d' ' -f1)" > ${HOLO_INSTALL_DIR}/etc/locale.conf
