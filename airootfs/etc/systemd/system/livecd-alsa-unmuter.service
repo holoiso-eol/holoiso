@@ -1,0 +1,13 @@
+[Unit]
+Description=Unmute All Sound Card Controls For Use With The Live Arch Environment
+# This needs to run after the audio device becomes available.
+Wants=systemd-udev-settle.service
+After=systemd-udev-settle.service sound.target
+ConditionKernelCommandLine=accessibility=on
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/livecd-sound -u
+
+[Install]
+WantedBy=sound.target

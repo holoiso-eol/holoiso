@@ -1,0 +1,20 @@
+[Unit]
+Description=Screen reader service
+After=livecd-alsa-unmuter.service
+Before=getty@tty1.service
+ConditionKernelCommandLine=accessibility=on
+
+[Service]
+Type=oneshot
+TTYPath=/dev/tty13
+ExecStartPre=/usr/bin/chvt 13
+ExecStart=/usr/local/bin/livecd-sound -p
+ExecStartPost=/usr/bin/chvt 1
+ExecStartPost=systemctl start espeakup.service
+StandardInput=tty
+TTYVHangup=yes
+TTYVTDisallocate=yes
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,3 @@
+Defaults node
+defaults.ctl.card %card%;
+defaults.pcm.card %card%;

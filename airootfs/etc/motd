@@ -1,0 +1,8 @@
+Welcome to [38;2;23;147;209mSteamOS 3![0m
+
+To install SteamOS 3 on your device, connect to network using RNDIS/Ethernet
+or connect to wifi using [38;2;23;147;209miwctl[0m
+then type [38;2;23;147;209mholoinstall[0m in!
+
+Alternatively, you can repair your current ArchLinux/SteamOS installation
+by chrooting into it using [38;2;23;147;209march-chroot[0m

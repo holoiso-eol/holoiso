@@ -1,0 +1,73 @@
+#!/bin/zsh
+echo "SteamOS 3 Installer (x86_64)"
+echo "Start time: $(date)"
+CMD_PACMAN_INSTALL=(/usr/bin/pacman --noconfirm -S --needed)
+CMD_PACMAN_UPDATE=(/usr/bin/pacman -Sy)
+SYSTEM_LOCALE="${SYSTEM_LOCALE:-en_US.UTF-8 UTF-8}"
+HOLO_INSTALL_DIR="${HOLO_INSTALL_DIR:-/mnt}"
+
+# Installation begins here
+echo "Starting installation..."
+${CMD_PACMAN_UPDATE}
+echo "db update complete!"
+lsblk
+read "?Enter your desired drive node here: " DEVICE
+read "?WARNING: This drive is going to be erased fully. Press enter to continue, or CTRL+Z to terminate"
+
+INSTALLDEVICE="${DEVICE}"
+echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop)"
+if [ $? -eq 0 ]; then
+    INSTALLDEVICE="${DEVICE}p"
+fi
+
+echo "Creating partitions..."
+parted ${INSTALLDEVICE} mklabel gpt
+parted ${INSTALLDEVICE} mkpart primary fat32 2M 256M
+parted ${INSTALLDEVICE} set 1 boot on
+parted ${INSTALLDEVICE} set 1 esp on
+parted ${INSTALLDEVICE} mkpart primary btrfs 256M 100%
+root_partition="${INSTALLDEVICE}2"
+mkfs -t vfat ${INSTALLDEVICE}1
+fatlabel ${INSTALLDEVICE}1 HOLOEFI
+mkfs -t btrfs ${root_partition}
+btrfs filesystem label ${root_partition} holo-root
+
+echo "Partition creating complete, mounting and pacstrapping..."
+mount -t btrfs -o subvol=/,compress-force=zstd:1,discard,noatime,nodiratime ${root_partition} ${HOLO_INSTALL_DIR}
+pacstrap -i ${HOLO_INSTALL_DIR} base base-devel amd-ucode intel-ucode linux-neptune linux-firmware
+echo "Base system installation done, generating fstab..."
+genfstab -U -p /mnt >> /mnt/etc/fstab
+cp /etc/pacman.conf /mnt/etc/pacman.conf
+cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist
+read "?Enter your hostname for this installation: " HOLOHOSTNAME
+echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
+read "?Enter your username for this installation: " HOLOUSER
+read "?Enter your user password for this installation: " HOLOPASS
+echo "Creating user ${HOLOUSER}..."
+echo -e "root\nroot" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
+arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
+echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
+echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
+echo "Installing bootloader..."
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
+mkdir ${HOLO_INSTALL_DIR}/boot/efi
+mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} efibootmgr neofetch core/grub mkinitcpio networkmanager inetutils
+arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd
+arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
+arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
+echo "Installing DE and dependencies..."
+# Updates pacman db for chroot
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
+# Installs Steam, KDE Plasma and stuff
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl tar yay git go plasma lightdm lightdm-gtk-greeter dolphin chromium steam-jupiter-stable gamescope mangohud jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
+# Services
+echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
+arch-chroot ${HOLO_INSTALL_DIR} locale-gen
+echo "LANG=$(echo ${SYSTEM_LOCALE} | cut -d' ' -f1)" > ${HOLO_INSTALL_DIR}/etc/locale.conf
+arch-chroot ${HOLO_INSTALL_DIR} systemctl enable lightdm
+echo "Installation complete! You may reboot now!"
+echo "End time: $(date)"
+
