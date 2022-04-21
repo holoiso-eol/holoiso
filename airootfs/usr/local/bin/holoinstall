@@ -65,8 +65,12 @@ arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
 echo "Installing DE and dependencies..."
 # Updates pacman db for chroot
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-# Installs Steam, KDE Plasma and stuff
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl tar yay git go plasma lightdm lightdm-gtk-greeter dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
+# Installs DE
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview lightdm lightdm-gtk-greeter dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
+# Installs more stuff
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} bluez bluez-utils cheeze blueman bluez-qt
+arch-chroot ${HOLO_INSTALL_DIR} systemctl enable bluetooth
+arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
 # Services
 echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
 arch-chroot ${HOLO_INSTALL_DIR} locale-gen
