@@ -17,6 +17,7 @@ To build:
 Make sure you are running this on Steam Deck/winesapOS/pacstrapped SteamOS3. If not, copy `airootfs/etc/pacman.d/mirrorlist` to your Arch's installation
 
 Make sure you have `python` and `archiso` installed
+
 Trigger build by:
 ```
 git clone https://github.com/bhaiest/holoiso/
