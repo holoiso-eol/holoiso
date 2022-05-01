@@ -2,7 +2,7 @@
 # shellcheck disable=SC2034
 
 iso_name="SteamOS_Holo"
-iso_label="JUPITER_$(date +%Y%m)"
+iso_label="HOLO_$(date +%Y%m)"
 iso_publisher="theVakhovske <https://github.com/bhaiest>"
 iso_application="SteamOS Live/Rescue CD"
 iso_version="$(date +%Y.%m.%d)"
@@ -20,4 +20,5 @@ file_permissions=(
   ["/usr/local/bin/choose-mirror"]="0:0:755"
   ["/usr/local/bin/Installation_guide"]="0:0:755"
   ["/usr/local/bin/livecd-sound"]="0:0:755"
+  ["/usr/local/bin/holoinstall"]="0:0:755"  
 )
