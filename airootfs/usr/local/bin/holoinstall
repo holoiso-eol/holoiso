@@ -39,6 +39,10 @@ echo "Base system installation done, generating fstab..."
 genfstab -U -p /mnt >> /mnt/etc/fstab
 cp /etc/pacman.conf /mnt/etc/pacman.conf
 cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist
+cp /etc/holoinstall/steamos-session-select /mnt/usr/bin/steamos-session-select
+cp /etc/holoinstall/steamos-update /mnt/usr/bin/steamos-update
+chmod +x /mnt/usr/bin/steamos-session-select
+chmod +x /mnt/usr/bin/steamos-session-select
 read "?Enter your hostname for this installation: " HOLOHOSTNAME
 echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
 read "?Enter your username for this installation: " HOLOUSER
