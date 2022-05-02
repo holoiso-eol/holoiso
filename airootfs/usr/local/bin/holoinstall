@@ -41,8 +41,8 @@ cp /etc/pacman.conf /mnt/etc/pacman.conf
 cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist
 cp /etc/holoinstall/steamos-session-select /mnt/usr/bin/steamos-session-select
 cp /etc/holoinstall/steamos-update /mnt/usr/bin/steamos-update
-chmod +x /mnt/usr/bin/steamos-session-select
-chmod +x /mnt/usr/bin/steamos-session-select
+arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-session-select
+arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update
 read "?Enter your hostname for this installation: " HOLOHOSTNAME
 echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
 read "?Enter your username for this installation: " HOLOUSER
@@ -58,7 +58,7 @@ echo "Installing bootloader..."
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 mkdir ${HOLO_INSTALL_DIR}/boot/efi
 mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} efibootmgr neofetch core/grub mkinitcpio networkmanager inetutils
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} efibootmgr sddm neofetch core/grub mkinitcpio networkmanager inetutils
 arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd
 arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
 arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
@@ -66,7 +66,7 @@ echo "Installing DE and dependencies..."
 # Updates pacman db for chroot
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 # Installs DE
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview lightdm lightdm-gtk-greeter dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
 # Installs more stuff
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} bluez bluez-utils cheeze blueman bluez-qt
 arch-chroot ${HOLO_INSTALL_DIR} systemctl enable bluetooth
@@ -75,7 +75,7 @@ arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
 echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
 arch-chroot ${HOLO_INSTALL_DIR} locale-gen
 echo "LANG=$(echo ${SYSTEM_LOCALE} | cut -d' ' -f1)" > ${HOLO_INSTALL_DIR}/etc/locale.conf
-arch-chroot ${HOLO_INSTALL_DIR} systemctl enable lightdm
+arch-chroot ${HOLO_INSTALL_DIR} systemctl enable sddm
 echo "Installation complete! You may reboot now!"
 echo "End time: $(date)"
 
