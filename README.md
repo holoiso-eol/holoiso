@@ -14,7 +14,23 @@ Q1:
 Q2:
 - ***The ISO didn't boot for me, any solution?***
 - Currently, ISO only boots, only if flashing using BalenaEtcher, RosaImageWriter, Fedora Media Writer and DD with 4MB block size
-  
+
+Working stuff:
+- Boots
+- SteamOS OOBE (SteamDeck UI First Boot Experience)
+- Deck UI (separate session)
+- Deck UI (-gamepadui)
+- TDP/FPS limiting
+- Global FSR
+- Shader Pre-Caching
+- cool-looking neofetch?
+- SteamDeck pacman mirrors
+
+Known issues:
+- KDE defaults desktop theme to light mode for now
+- NVIDIA GPUs are stuck on black screen or `Triggering uevents`. Solution: Boot with `nomodeset=1` and install proprietary drivers https://wiki.archlinux.org/title/NVIDIA. Keep in mind, that Steam Deck session won't work for now, delete `/etc/sddm.conf.d/autologin.conf` to avoid booting into black screen with infinite crash.
+- Intel GPUs/iGPUs require Gamescope and MESA downgrade in order to boot into Steam Deck session. Refer to https://gist.github.com/drraccoony/8a8d0a9e3dfde9fafd3e374e418d2935 for further guidance.
+
 Installation process:
 -
 Prerequistes:
@@ -40,6 +56,7 @@ Screenshots:
 
 Notes:
 -
+
 This configuration includes Valve's pacman.conf repositories, `holoinstall` script and `holoinstall` post-installation binaries.
 
 This configuration builds `releng`-based ISO, which is default Arch Linux redistribution flavor.
