@@ -47,6 +47,7 @@ less
 lftp
 libfido2
 libusb-compat
+linux
 linux-neptune
 linux-atm
 linux-firmware
