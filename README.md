@@ -13,7 +13,7 @@ Q1:
  
 Q2:
 - ***The ISO didn't boot for me, any solution?***
-- Currently, ISO only boots, only if flashing using BalenaEtcher, RosaImageWriter, Fedora Media Writer and DD with 4MB block size
+- Currently, ISO only boots, only if flashing using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/) and DD with 4MB block size
 
 Working stuff:
 - Boots
@@ -40,7 +40,7 @@ Prerequistes:
 - Disabled secure boot
 
 Installation:
-- Flash the ISO from `releases` tab using balenaEtcher or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
+- Flash the ISO from `releases` tab using [BalenaEtcher](https://www.balena.io/etcher/) or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
 - Boot into ISO
 - Run `holoinstall`
 - Enter drive node, starting from `for ex. sda or nvme0n1` when asked
