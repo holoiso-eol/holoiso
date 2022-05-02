@@ -11,7 +11,7 @@ echo "Starting installation..."
 ${CMD_PACMAN_UPDATE}
 echo "db update complete!"
 lsblk
-read "?Enter your desired drive node here: " DRIVEDEVICE
+read "?Enter your desired drive node here (for example, sda or nvme0n1): " DRIVEDEVICE
 read "?WARNING: This drive is going to be erased fully. Press enter to continue, or CTRL+Z to terminate"
 
 DEVICE="/dev/${DRIVEDEVICE}"
@@ -45,40 +45,37 @@ cp /etc/holoinstall/steamos-session-select /mnt/usr/bin/steamos-session-select
 cp /etc/holoinstall/steamos-update /mnt/usr/bin/steamos-update
 arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-session-select
 arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update
+echo "Installing SDDM, bootloader and services..."
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
+mkdir ${HOLO_INSTALL_DIR}/boot/efi
+mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} efibootmgr bluez bluez-utils cheeze blueman bluez-qt sddm neofetch core/grub mkinitcpio networkmanager inetutils
+arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd bluetooth
+arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
+arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
+echo "Settings up accounts, default Steam Deck UI, Usergroups for"
 read "?Enter your hostname for this installation: " HOLOHOSTNAME
 echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
 read "?Enter your username for this installation: " HOLOUSER
 read "?Enter your user password for this installation: " HOLOPASS
 echo "Creating user ${HOLOUSER}..."
+echo "This computer: ${HOLOUSER}@${HOLOHOSTNAME}"
 echo -e "root\nroot" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
 echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
 echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
-echo "Installing bootloader..."
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-mkdir ${HOLO_INSTALL_DIR}/boot/efi
-mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} efibootmgr sddm neofetch core/grub mkinitcpio networkmanager inetutils
-arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd
-arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
-arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
+mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
+echo "[Autologin]
+User=${HOLOUSER}
+Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
+arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
 echo "Installing DE and dependencies..."
 # Updates pacman db for chroot
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 # Installs DE
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
-# Installs more stuff
-echo "Installing Bluetooth dependencies..."
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} bluez bluez-utils cheeze blueman bluez-qt
-arch-chroot ${HOLO_INSTALL_DIR} systemctl enable bluetooth
-arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
-echo "Configuring Steam Deck UI by default..."
-mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
-echo "[Autologin]
-User=${USER}
-Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl tar yay git go plasma-meta plasma-nm gedit vlc ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
 # Services
 echo "Setting up locale..."
 echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
