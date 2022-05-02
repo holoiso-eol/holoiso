@@ -1,5 +1,5 @@
 #!/bin/zsh
-echo "SteamOS 3 Installer (x86_64)"
+echo "SteamOS 3 Installer, beta 1 (x86_64)"
 echo "Start time: $(date)"
 CMD_PACMAN_INSTALL=(/usr/bin/pacman --noconfirm -S --needed)
 CMD_PACMAN_UPDATE=(/usr/bin/pacman -Sy)
@@ -31,7 +31,7 @@ parted ${DEVICE} mkpart primary btrfs 256M 100%
 root_partition="${INSTALLDEVICE}2"
 mkfs -t vfat ${INSTALLDEVICE}1
 fatlabel ${INSTALLDEVICE}1 HOLOEFI
-mkfs -t btrfs ${root_partition}
+mkfs -t btrfs -f ${root_partition}
 btrfs filesystem label ${root_partition} holo-root
 
 echo "Partition creating complete, mounting and pacstrapping..."
@@ -45,37 +45,41 @@ cp /etc/holoinstall/steamos-session-select /mnt/usr/bin/steamos-session-select
 cp /etc/holoinstall/steamos-update /mnt/usr/bin/steamos-update
 arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-session-select
 arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update
-echo "Installing SDDM, bootloader and services..."
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-mkdir ${HOLO_INSTALL_DIR}/boot/efi
-mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} efibootmgr bluez bluez-utils cheeze blueman bluez-qt sddm neofetch core/grub mkinitcpio networkmanager inetutils
-arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd bluetooth
-arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
-arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
-echo "Settings up accounts, default Steam Deck UI, Usergroups for"
 read "?Enter your hostname for this installation: " HOLOHOSTNAME
 echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
 read "?Enter your username for this installation: " HOLOUSER
 read "?Enter your user password for this installation: " HOLOPASS
 echo "Creating user ${HOLOUSER}..."
-echo "This computer: ${HOLOUSER}@${HOLOHOSTNAME}"
 echo -e "root\nroot" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
 echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
 echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
-mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
-echo "[Autologin]
-User=${HOLOUSER}
-Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
-arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
+echo "Installing bootloader..."
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
+mkdir ${HOLO_INSTALL_DIR}/boot/efi
+mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} efibootmgr sddm neofetch core/grub mkinitcpio networkmanager inetutils
+arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd
+arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
+arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot ${HOLO_INSTALL_DIR} sed -i 's/Arch Linux/SteamOS/g' /boot/grub/grub.cfg
 echo "Installing DE and dependencies..."
 # Updates pacman db for chroot
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 # Installs DE
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl tar yay git go plasma-meta plasma-nm gedit vlc ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl vlc gedit tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud cheese vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
+# Installs more stuff
+echo "Installing Bluetooth dependencies..."
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} bluez bluez-utils blueman bluez-qt
+arch-chroot ${HOLO_INSTALL_DIR} systemctl enable bluetooth
+arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
+echo "Configuring Steam Deck UI by default..."
+mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
+echo "[Autologin]
+User=${HOLOUSER}
+Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
 # Services
 echo "Setting up locale..."
 echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
@@ -84,4 +88,3 @@ echo "LANG=$(echo ${SYSTEM_LOCALE} | cut -d' ' -f1)" > ${HOLO_INSTALL_DIR}/etc/l
 arch-chroot ${HOLO_INSTALL_DIR} systemctl enable sddm
 echo "Installation complete! You may reboot now!"
 echo "End time: $(date)"
-
