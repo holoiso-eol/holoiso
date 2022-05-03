@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/97450182/166436080-1ca076ec-c745-4c74-ba39-455b2f8b5117.png)
+![image](https://user-images.githubusercontent.com/97450182/166438078-6bc88bc6-6877-409f-a16d-ba961b61bdf0.png)
 
 # HoloISO
 SteamOS 3 (Holo) archiso configuration.
