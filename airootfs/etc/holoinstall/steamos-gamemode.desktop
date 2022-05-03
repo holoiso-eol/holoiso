@@ -1,0 +1,19 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=steamos-session-select
+GenericName[en_US]=
+GenericName=
+Icon=steamdeck-gaming-return
+MimeType=
+Name[en_US]=Return to Gaming mode
+Name=Return to Gaming mode
+Path=/usr/bin/
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=
