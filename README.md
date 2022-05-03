@@ -8,7 +8,7 @@ SteamOS 3 (Holo) archiso configuration.
 
 This project attempts to bring Steam Deck's Holo OS into a generic, installable format and replicate close-to-official SteamOS experience.
 
-Upon booting, you'll be greeted with Steam Deck's OOBE screen, from where you'll connect to your network and login to Steam account, from there, you can exit to SDDM login screen by choosing `Switch to desktop` in power menu.
+Upon booting, you'll be greeted with Steam Deck's OOBE screen, from where you'll connect to your network and login to Steam account, from there, you can exit to KDE Plasma seamlessly by choosing `Switch to desktop` in power menu. https://www.youtube.com/watch?v=smfwna2iHho
 
 Q1:
 - ***Is this official?***
@@ -16,12 +16,13 @@ Q1:
  
 Q2:
 - ***The ISO didn't boot for me, any solution?***
-- Currently, ISO only boots, only if flashing using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/) and DD with 4MB block size
+- Currently, ISO only boots, if flashed using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/) and DD with 4MB block size
 
 Working stuff:
 - Boots
 - SteamOS OOBE (SteamDeck UI First Boot Experience)
 - Deck UI (separate session)
+- Switch to Desktop from plasma/to plasma
 - Deck UI (-gamepadui)
 - TDP/FPS limiting
 - Global FSR

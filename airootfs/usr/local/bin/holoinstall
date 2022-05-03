@@ -56,6 +56,7 @@ echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HO
 echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
+cp /etc/holoinstall/osinfo /mnt/etc/os-release
 echo "Installing bootloader..."
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 mkdir ${HOLO_INSTALL_DIR}/boot/efi
