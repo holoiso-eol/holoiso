@@ -81,6 +81,7 @@ mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
 echo "[Autologin]
 User=${HOLOUSER}
 Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
+mkdir /mnt/home/${HOLOUSER}/Desktop
 cp /etc/holoinstall/steamos-gamemode.desktop /mnt/home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
 arch-chroot ${HOLO_INSTALL_DIR} chmod +x /home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
 # Services
