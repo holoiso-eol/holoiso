@@ -69,7 +69,7 @@ echo "Installing DE and dependencies..."
 # Updates pacman db for chroot
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 # Installs DE
-arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl vlc gedit tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud cheese vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
+arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring curl vlc kwrite zsh noto-fonts-cjk tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud cheese vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
 # Installs more stuff
 echo "Installing Bluetooth dependencies..."
 arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} bluez bluez-utils blueman bluez-qt
@@ -80,6 +80,8 @@ mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
 echo "[Autologin]
 User=${HOLOUSER}
 Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
+cp /etc/holoinstall/steamos-gamemode.desktop /mnt/home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
+arch-chroot ${HOLO_INSTALL_DIR} chmod +x /home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
 # Services
 echo "Setting up locale..."
 echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
