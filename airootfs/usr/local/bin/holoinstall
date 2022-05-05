@@ -56,9 +56,10 @@ base_os_install() {
 	echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
 	read "?Enter your username for this installation: " HOLOUSER
 	read "?Enter your user password for this installation: " HOLOPASS
+	read "?Enter your root password for this installation: " ROOTPASS
 
 	echo "\nCreating user ${HOLOUSER}..."
-	echo -e "root\nroot" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
+	echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
 	echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
 	echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
