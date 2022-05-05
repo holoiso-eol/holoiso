@@ -43,10 +43,16 @@ Prerequistes:
 - UEFI-enabled device
 - Disabled secure boot
 
+Installation types:
+- 1) barebones: Barebones OS-only installation, resembles vanilla Arch Linux installation
+- 2) gameonly: Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has Steam Deck UI installed.
+- 3) deckperience: Full SteamOS 3 experience, Includes proper session switching, KDE Plasma and media apps, Chromium preinstalled
+
 Installation:
 - Flash the ISO from `releases` tab using [BalenaEtcher](https://www.balena.io/etcher/) or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
 - Boot into ISO
 - Run `holoinstall`
+- Select your installation flavor
 - Enter drive node, starting from `for ex. sda or nvme0n1` when asked
 - Take your favourite hot beverage, and wait till it installs :)
 

@@ -1,2 +1,3 @@
 #!/bin/bash
+# There will be an actual system updater soon :)
 exit 7
