@@ -13,7 +13,8 @@ This project attempts to bring the Steam Deck's Holo OS into a generic, installa
 - Is this official?
 > No, but it may as well be 99% of the way there. The code, and packages are straight from Valve with zero possible edits, and the ISO is being built on the official Steam Deck recovery image, running inside a QEMU instance.
 - The ISO didn't boot for me, any solution?
-> Currently, the ISO only boots, if flashed using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/) and DD with 4MB block size.
+> Currently, ISO only boots if flashed using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/), DD with 4MB block size, or [Rufus](https://rufus.ie) with DD mode.
+
 
 **Working stuff:**
 - Bootup
@@ -51,7 +52,7 @@ Installation process:
 > Full SteamOS 3 experience, Includes proper session switching, KDE Plasma and media apps, Chromium preinstalled.
 
 **Installation:**
-- Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) using [BalenaEtcher](https://www.balena.io/etcher/), or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
+- Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) using [BalenaEtcher](https://www.balena.io/etcher/), [Rufus](https://rufus.ie) with DD mode, or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
 - Boot into ISO
 - Run `holoinstall`
 - Enter drive node, starting from, for example, `sda` or `nvme0n1` when asked
