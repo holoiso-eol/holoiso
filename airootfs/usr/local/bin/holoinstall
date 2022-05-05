@@ -28,7 +28,7 @@ base_os_install() {
 		INSTALLDEVICE="${DEVICE}p"
 	fi
 	
-	echo "Creating partitions..."
+	echo "\nCreating partitions..."
 	sfdisk --delete ${DEVICE}
 	wipefs -a ${DEVICE}
 	parted ${DEVICE} mklabel gpt
@@ -41,19 +41,23 @@ base_os_install() {
 	fatlabel ${INSTALLDEVICE}1 HOLOEFI
 	mkfs -t btrfs -f ${root_partition}
 	btrfs filesystem label ${root_partition} holo-root
-	echo "Partition creating complete, mounting and pacstrapping..."
+
+	echo "\nPartition creating complete, mounting and pacstrapping..."
 	echo "${UCODE_INSTALL_MSG}"
 	mount -t btrfs -o subvol=/,compress-force=zstd:1,discard,noatime,nodiratime ${root_partition} ${HOLO_INSTALL_DIR}
 	pacstrap -i ${HOLO_INSTALL_DIR} base base-devel ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune linux-neptune-headers linux-firmware
-	echo "Base system installation done, generating fstab..."
+
+	echo "\nBase system installation done, generating fstab..."
 	genfstab -U -p /mnt >> /mnt/etc/fstab
 	cp /etc/pacman.conf /mnt/etc/pacman.conf
 	cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist
+
 	read "?Enter your hostname for this installation: " HOLOHOSTNAME
 	echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
 	read "?Enter your username for this installation: " HOLOUSER
 	read "?Enter your user password for this installation: " HOLOPASS
-	echo "Creating user ${HOLOUSER}..."
+
+	echo "\nCreating user ${HOLOUSER}..."
 	echo -e "root\nroot" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
 	echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
@@ -61,7 +65,8 @@ base_os_install() {
 	chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 	echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
 	cp /etc/holoinstall/osinfo /mnt/etc/os-release
-	echo "Installing bootloader..."
+
+	echo "\nInstalling bootloader..."
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	mkdir ${HOLO_INSTALL_DIR}/boot/efi
 	mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
@@ -70,7 +75,8 @@ base_os_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
 	arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
 	arch-chroot ${HOLO_INSTALL_DIR} sed -i 's/Arch Linux/SteamOS/g' /boot/grub/grub.cfg
-	echo "Setting up locale..."
+
+	echo "\nSetting up locale..."
 	echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
 	arch-chroot ${HOLO_INSTALL_DIR} locale-gen
 	echo "LANG=$(echo ${SYSTEM_LOCALE} | cut -d' ' -f1)" > ${HOLO_INSTALL_DIR}/etc/locale.conf	
@@ -83,12 +89,11 @@ gamescope_only_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update	
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring blueman bluez bluez-qt bluez-utils curl ffmpegthumbs gamescope git glxinfo go jupiter-hw-support lib32-pipewire lib32-pipewire-jack lib32-pipewire-v4l2 lib32-vulkan-radeon mangohud noto-fonts noto-fonts-cjk pipewire pipewire-alsa pipewire-jack pipewire-media-session pipewire-pulse pipewire-v4l2 steam-jupiter-stable tar vulkan-radeon yay zsh
-	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}	
-	echo "Configuring Steam Deck UI..."
+	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
+
+	echo "\nConfiguring Steam Deck UI..."
 	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
-	echo "[Autologin]
-User=${HOLOUSER}
-Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
+	echo "[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable sddm bluetooth
 }
 
@@ -99,15 +104,15 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update	
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring cheese chromium cups curl dolphin ffmpegthumbs gamescope git glxinfo go gwenview hunspell hunspell-en_us jupiter-hw-support kdegraphics-thumbnailers konsole kwrite lib32-pipewire lib32-pipewire-jack lib32-pipewire-v4l2 lib32-vulkan-radeon mangohud noto-fonts-cjk pipewire pipewire-alsa pipewire-jack pipewire-media-session pipewire-pulse pipewire-v4l2 plasma-meta plasma-nm spectacle steam-jupiter-stable steamdeck-kde-presets tar ufw vlc vulkan-radeon yay zsh
-	echo "Installing Bluetooth dependencies..."
+
+	echo "\nInstalling Bluetooth dependencies..."
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} blueman bluez bluez-qt bluez-utils
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable bluetooth
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
-	echo "Configuring Steam Deck UI by default..."
+
+	echo "\nConfiguring Steam Deck UI by default..."
 	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
-	echo "[Autologin]
-User=${HOLOUSER}
-Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
+	echo "[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
 	mkdir /mnt/home/${HOLOUSER}/Desktop
 	cp /etc/holoinstall/steamos-gamemode.desktop /mnt/home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
@@ -139,7 +144,7 @@ elif [[ "${HOLO_INSTALL_TYPE}" == "3" ]]; then
 	base_os_install
 	full_install
 	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
-	
+
 else
 	echo "Invalid choice. Exiting installer..."
 fi
