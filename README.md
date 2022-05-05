@@ -1,54 +1,55 @@
-
-![image](https://user-images.githubusercontent.com/97450182/166438178-abb068d0-ce36-4611-aefe-deb6fbc1ab51.png)
+ ![image](https://user-images.githubusercontent.com/97450182/166438178-abb068d0-ce36-4611-aefe-deb6fbc1ab51.png)
 
 # HoloISO
 SteamOS 3 (Holo) archiso configuration.
 
 ***Yes, Gabe. SteamOS functions well on a toaster.***
 
-This project attempts to bring Steam Deck's Holo OS into a generic, installable format and replicate close-to-official SteamOS experience.
+This project attempts to bring the Steam Deck's Holo OS into a generic, installable format, and provide a close-to-official SteamOS experience.
 
-Upon booting, you'll be greeted with Steam Deck's OOBE screen, from where you'll connect to your network and login to Steam account, from there, you can exit to KDE Plasma seamlessly by choosing `Switch to desktop` in power menu. https://www.youtube.com/watch?v=smfwna2iHho
 
-Q1:
-- ***Is this official?***
-- The code, and packages are straight from Valve with zero possible edits. And ISO is being built on official Steam Deck recovery image running inside QEMU instance.
- 
-Q2:
-- ***The ISO didn't boot for me, any solution?***
-- Currently, ISO only boots, if flashed using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/) and DD with 4MB block size
+**Common Questions**
 
-Working stuff:
-- Boots
-- SteamOS OOBE (SteamDeck UI First Boot Experience)
+- Is this official?
+> No, but it may as well be 99% of the way there. The code, and packages are straight from Valve with zero possible edits, and the ISO is being built on the official Steam Deck recovery image, running inside a QEMU instance.
+- The ISO didn't boot for me, any solution?
+> Currently, the ISO only boots, if flashed using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/) and DD with 4MB block size.
+
+**Working stuff:**
+- Bootup
+- SteamOS OOBE (Steam Deck UI First Boot Experience)
 - Deck UI (separate session)
-- Switch to Desktop from plasma/to plasma without user interference.
 - Deck UI (-gamepadui)
 - TDP/FPS limiting
 - Global FSR
 - Shader Pre-Caching
-- Valve's exclusive `Vapor` appearance for KDE Plasma
-- cool-looking neofetch?
-- SteamDeck pacman mirrors
+- Switch to Desktop from plasma/to plasma without user interference.
+- Valve's exclusive *Vapor* appearance for KDE Plasma
+- Steam Deck pacman mirrors
+- Cool-looking neofetch?
 
-Known issues:
-- NVIDIA GPUs are stuck on black screen or `Triggering uevents`. Solution: Boot with `nomodeset=1` and install proprietary drivers https://wiki.archlinux.org/title/NVIDIA. Keep in mind, that Steam Deck session won't work for now, delete `/etc/sddm.conf.d/autologin.conf` to avoid booting into black screen with infinite crash.
-- Intel GPUs/iGPUs require Gamescope and MESA downgrade in order to boot into Steam Deck session. Refer to https://gist.github.com/drraccoony/8a8d0a9e3dfde9fafd3e374e418d2935 for further guidance.
+**Known issues:**
+- NVIDIA GPUs are stuck on black screen or `Triggering uevents`. 
+> Solution: Boot with `nomodeset=1` and install [proprietary drivers](https://wiki.archlinux.org/title/NVIDIA). Keep in mind, that Steam Deck session won't work for now, delete `/etc/sddm.conf.d/autologin.conf` to avoid booting into black screen with infinite crash.
+- Intel GPUs/iGPUs require a Gamescope and MESA downgrade in order to boot into Steam Deck session. 
+> Refer to [this gist](https://gist.github.com/drraccoony/8a8d0a9e3dfde9fafd3e374e418d2935) for further guidance.
 
 Installation process:
 -
-Prerequistes:
+**Prerequistes:**
 - 4GB flash drive
 - AMD GPU with Vulkan and VDPAU support
 - UEFI-enabled device
 - Disabled secure boot
 
-Installation:
-- Flash the ISO from `releases` tab using [BalenaEtcher](https://www.balena.io/etcher/) or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
+**Installation:**
+- Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) using [BalenaEtcher](https://www.balena.io/etcher/), or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
 - Boot into ISO
 - Run `holoinstall`
 - Enter drive node, starting from `for ex. sda or nvme0n1` when asked
 - Take your favourite hot beverage, and wait till it installs :)
+
+Upon booting, you'll be greeted with Steam Deck's OOBE screen, from where you'll connect to your network, and login to your Steam account, from there, you can exit to KDE Plasma seamlessly by choosing *Switch to desktop* in the power menu, [like so](https://www.youtube.com/watch?v=smfwna2iHho).
 
 Screenshots:
 -
@@ -63,14 +64,14 @@ Notes:
 
 This configuration includes Valve's pacman.conf repositories, `holoinstall` script and `holoinstall` post-installation binaries.
 
-This configuration builds `releng`-based ISO, which is default Arch Linux redistribution flavor.
+This configuration builds a *releng-based ISO*, which is the default Arch Linux redistribution flavor.
 
-Building the  ISO:
+Building the ISO:
 -
-Trigger build by:
+Trigger the build by executing:
 ```
 git clone https://github.com/bhaiest/holoiso/
 sudo mkarchiso -v holoiso
 ```
-Once it ends, your ISO will be available in `out` folder
+Once it ends, your ISO will be available in the `out` folder.
 
