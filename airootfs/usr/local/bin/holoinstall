@@ -65,7 +65,7 @@ base_os_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	mkdir ${HOLO_INSTALL_DIR}/boot/efi
 	mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} efibootmgr sddm neofetch core/grub mkinitcpio networkmanager inetutils
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} core/grub efibootmgr inetutils mkinitcpio neofetch networkmanager sddm
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd
 	arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
 	arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
@@ -82,7 +82,7 @@ gamescope_only_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-session-select
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update	
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring gamescope mangohud noto-fonts-cjk noto-fonts glxinfo vulkan-radeon lib32-vulkan-radeon steam-jupiter-stable jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session bluez bluez-utils blueman bluez-qt curl zsh yay git go tar ffmpegthumbs
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring blueman bluez bluez-qt bluez-utils curl ffmpegthumbs gamescope git glxinfo go jupiter-hw-support lib32-pipewire lib32-pipewire-jack lib32-pipewire-v4l2 lib32-vulkan-radeon mangohud noto-fonts noto-fonts-cjk pipewire pipewire-alsa pipewire-jack pipewire-media-session pipewire-pulse pipewire-v4l2 steam-jupiter-stable tar vulkan-radeon yay zsh
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}	
 	echo "Configuring Steam Deck UI..."
 	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
@@ -98,9 +98,9 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-session-select
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update	
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring cups curl vlc kwrite zsh noto-fonts-cjk tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud cheese vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session ufw
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring cheese chromium cups curl dolphin ffmpegthumbs gamescope git glxinfo go gwenview jupiter-hw-support kdegraphics-thumbnailers konsole kwrite lib32-pipewire lib32-pipewire-jack lib32-pipewire-v4l2 lib32-vulkan-radeon mangohud noto-fonts-cjk pipewire pipewire-alsa pipewire-jack pipewire-media-session pipewire-pulse pipewire-v4l2 plasma-meta plasma-nm spectacle steam-jupiter-stable steamdeck-kde-presets tar ufw vlc vulkan-radeon yay zsh
 	echo "Installing Bluetooth dependencies..."
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} bluez bluez-utils blueman bluez-qt
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} blueman bluez bluez-qt bluez-utils
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable bluetooth
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
 	echo "Configuring Steam Deck UI by default..."
