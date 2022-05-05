@@ -127,22 +127,21 @@ if [[ "${HOLO_INSTALL_TYPE}" == "1" ]]; then
 	echo "Installing SteamOS, barebones configuration..."
 	base_os_install
 	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
-else
-	echo "Invalid choice. Exiting installer..."
-fi
 
-if [[ "${HOLO_INSTALL_TYPE}" == "2" ]]; then
+elif [[ "${HOLO_INSTALL_TYPE}" == "2" ]]; then
 	echo "Installing SteamOS, gameonly configuration..."
 	base_os_install
 	gamescope_only_install
 	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
-fi
 
-if [[ "${HOLO_INSTALL_TYPE}" == "3" ]]; then
+elif [[ "${HOLO_INSTALL_TYPE}" == "3" ]]; then
 	echo "Installing SteamOS, deckperience configuration..."
 	base_os_install
 	full_install
 	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
+	
+else
+	echo "Invalid choice. Exiting installer..."
 fi
 
 echo "End time: $(date)"
