@@ -42,11 +42,19 @@ Installation process:
 - UEFI-enabled device
 - Disabled secure boot
 
+**Installation types:**
+- barebones 
+> Barebones OS-only installation, resembles vanilla Arch Linux installation.
+- gameonly 
+> Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has Steam Deck UI installed.
+- deckperience
+> Full SteamOS 3 experience, Includes proper session switching, KDE Plasma and media apps, Chromium preinstalled.
+
 **Installation:**
 - Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) using [BalenaEtcher](https://www.balena.io/etcher/), or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
 - Boot into ISO
 - Run `holoinstall`
-- Enter drive node, starting from `for ex. sda or nvme0n1` when asked
+- Enter drive node, starting from, for example, `sda` or `nvme0n1` when asked
 - Take your favourite hot beverage, and wait till it installs :)
 
 Upon booting, you'll be greeted with Steam Deck's OOBE screen, from where you'll connect to your network, and login to your Steam account, from there, you can exit to KDE Plasma seamlessly by choosing *Switch to desktop* in the power menu, [like so](https://www.youtube.com/watch?v=smfwna2iHho).
