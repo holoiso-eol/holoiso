@@ -6,13 +6,6 @@ CMD_PACMAN_UPDATE=(/usr/bin/pacman -Sy)
 CPU_VENDOR=$(cat /proc/cpuinfo | grep 'vendor' | uniq | cut -c 13-)
 SYSTEM_LOCALE="${SYSTEM_LOCALE:-en_US.UTF-8 UTF-8}"
 HOLO_INSTALL_DIR="${HOLO_INSTALL_DIR:-/mnt}"
-# This defines the partition detection:
-DEVICE="/dev/${DRIVEDEVICE}"
-INSTALLDEVICE="${DEVICE}"
-echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
-if [ $? -eq 0 ]; then
-	INSTALLDEVICE="${DEVICE}p"
-fi
 
 if [[ "${CPU_VENDOR}" == "AuthenticAMD" ]]; then
 	UCODE_INSTALL_MSG="AMD CPU detected, installing AMD ucode..."
@@ -26,6 +19,15 @@ base_os_install() {
 	lsblk
 	read "?Enter your desired drive node here (for example, sda or nvme0n1): " DRIVEDEVICE
 	read "?WARNING: This drive is going to be erased fully. Press enter to continue, or CTRL+Z to terminate"
+	
+	DEVICE="/dev/${DRIVEDEVICE}"
+	
+	INSTALLDEVICE="${DEVICE}"
+	echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
+	if [ $? -eq 0 ]; then
+		INSTALLDEVICE="${DEVICE}p"
+	fi
+	
 	echo "Creating partitions..."
 	sfdisk --delete ${DEVICE}
 	wipefs -a ${DEVICE}
@@ -113,7 +115,7 @@ Session=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autolo
 }
 
 # The installer itself. Good wuck.
-echo "SteamOS 3 Installer, RC1 alpha zero (x86_64)"
+echo "SteamOS 3 Installer, version SteamOS_Holo_RC1-20220505_0837_amdgpu-x86_64"
 echo "Start time: $(date)"
 echo "Please choose installation type:"
 echo "1) barebones: Barebones OS-only installation"
