@@ -105,6 +105,7 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update	
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring cheese chromium cups curl dolphin ffmpegthumbs gamescope git glxinfo go gwenview hunspell hunspell-en_us jupiter-hw-support kdegraphics-thumbnailers konsole kwrite lib32-pipewire lib32-pipewire-jack lib32-pipewire-v4l2 lib32-vulkan-radeon mangohud noto-fonts-cjk pipewire pipewire-alsa pipewire-jack pipewire-media-session pipewire-pulse pipewire-v4l2 plasma-meta plasma-nm spectacle steam-jupiter-stable steamdeck-kde-presets tar ufw vlc vulkan-radeon yay zsh
+	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable cups
 
 	echo "\nInstalling Bluetooth dependencies..."
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} blueman bluez bluez-qt bluez-utils
