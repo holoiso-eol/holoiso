@@ -2,10 +2,10 @@
 # shellcheck disable=SC2034
 
 iso_name="SteamOS_Holo_RC1"
-iso_label="ARCH_$(date +%Y%m)"
+iso_label="HOLO_$(date +%Y%m)"
 iso_publisher="theVakhovske <https://github.com/bhaiest>"
 iso_application="SteamOS Live/Rescue CD"
-iso_version="2022-05-03-54c364c_amdgpu"
+iso_version="$(date +%Y%m%d_%H%M)_amdgpu"
 install_dir="arch"
 buildmodes=('iso')
 bootmodes=('uefi-x64.systemd-boot.esp' 'uefi-x64.systemd-boot.eltorito')
