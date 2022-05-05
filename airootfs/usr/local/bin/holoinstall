@@ -98,7 +98,7 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-session-select
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update	
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring cups curl vlc kwrite zsh noto-fonts-cjk tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud cheese vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring cups curl vlc kwrite zsh noto-fonts-cjk tar yay git go plasma-meta plasma-nm ffmpegthumbs kdegraphics-thumbnailers gwenview glxinfo dolphin konsole steamdeck-kde-presets chromium steam-jupiter-stable gamescope mangohud cheese vulkan-radeon lib32-vulkan-radeon jupiter-hw-support pipewire-alsa pipewire-jack lib32-pipewire-jack pipewire-pulse pipewire-v4l2 spectacle lib32-pipewire-v4l2 pipewire lib32-pipewire pipewire-media-session ufw
 	echo "Installing Bluetooth dependencies..."
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} bluez bluez-utils blueman bluez-qt
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable bluetooth
