@@ -7,6 +7,15 @@ CPU_VENDOR=$(cat /proc/cpuinfo | grep 'vendor' | uniq | cut -c 13-)
 SYSTEM_LOCALE="${SYSTEM_LOCALE:-en_US.UTF-8 UTF-8}"
 HOLO_INSTALL_DIR="${HOLO_INSTALL_DIR:-/mnt}"
 
+# Internet connectivity check
+wget -q --spider http://google.com
+if [ $? -eq 0 ]; then
+	echo "Internet check passed"
+else
+	echo -e "No Internet connection available, exiting\nUse wifi-menu util to connect WiFi"
+	exit
+fi
+
 if [[ "${CPU_VENDOR}" == "AuthenticAMD" ]]; then
 	UCODE_INSTALL_MSG="AMD CPU detected, installing AMD ucode..."
 	UCODE_INSTALL="amd-ucode"
@@ -57,15 +66,18 @@ base_os_install() {
 	read "?Enter your username for this installation: " HOLOUSER
 	read "?Enter your user password for this installation: " HOLOPASS
 	read "?Enter your root password for this installation: " ROOTPASS
-
+	read "?Enable passwordless sudo for $HOLOUSER (y/n): " PASSWDLESS
 	echo "\nCreating user ${HOLOUSER}..."
 	echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
 	echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
-	echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	if [[ ${PASSWDLESS} == "y" ]];then
+		echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	else
+		echo "${HOLOUSER} ALL=(root) ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	fi
 	chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 	echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
-	cp /etc/holoinstall/osinfo /mnt/etc/os-release
 
 	echo "\nInstalling bootloader..."
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
@@ -89,7 +101,11 @@ gamescope_only_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-session-select
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update	
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring blueman bluez bluez-qt bluez-utils curl ffmpegthumbs gamescope git glxinfo go jupiter-hw-support lib32-pipewire lib32-pipewire-jack lib32-pipewire-v4l2 lib32-vulkan-radeon mangohud noto-fonts noto-fonts-cjk pipewire pipewire-alsa pipewire-jack pipewire-media-session pipewire-pulse pipewire-v4l2 steam-jupiter-stable tar vulkan-radeon yay zsh
+	###
+	### To be replaced: arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring blueman bluez bluez-qt bluez-utils curl ffmpegthumbs gamescope git glxinfo go jupiter-hw-support lib32-pipewire lib32-pipewire-jack lib32-pipewire-v4l2 lib32-vulkan-radeon mangohud noto-fonts noto-fonts-cjk pipewire pipewire-alsa pipewire-jack pipewire-media-session pipewire-pulse pipewire-v4l2 steam-jupiter-stable tar vulkan-radeon yay zsh
+	###
+	### With: arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-gameonly pipewire-media-session vulkan-radeon lib32-vulkan-radeon
+	###
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
 
 	echo "\nConfiguring Steam Deck UI..."
@@ -99,12 +115,8 @@ gamescope_only_install() {
 }
 
 full_install() {
-	cp /etc/holoinstall/steamos-session-select /mnt/usr/bin/steamos-session-select
-	cp /etc/holoinstall/steamos-update /mnt/usr/bin/steamos-update
-	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-session-select
-	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update	
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring cheese chromium cups curl dolphin ffmpegthumbs gamescope git glxinfo go gwenview hunspell hunspell-en_us jupiter-hw-support kdegraphics-thumbnailers konsole kwrite lib32-pipewire lib32-pipewire-jack lib32-pipewire-v4l2 lib32-vulkan-radeon mangohud noto-fonts-cjk pipewire pipewire-alsa pipewire-jack pipewire-media-session pipewire-pulse pipewire-v4l2 plasma-meta plasma-nm print-manager spectacle steam-jupiter-stable steamdeck-kde-presets tar ufw vlc vulkan-radeon yay zsh
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main pipewire-media-session vulkan-radeon lib32-vulkan-radeon
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable cups
 
 	echo "\nInstalling Bluetooth dependencies..."
@@ -126,8 +138,7 @@ echo "SteamOS 3 Installer, version SteamOS_Holo_RC1-20220505_0837_amdgpu-x86_64"
 echo "Start time: $(date)"
 echo "Please choose installation type:"
 echo "1) barebones: Barebones OS-only installation"
-echo "2) gameonly: Steam Deck UI only (AMD GPU only; no desktop)"
-echo "3) deckperience: Full SteamOS 3 experience"
+echo "2) deckperience: Full SteamOS 3 experience"
 read "?Enter your choice here: " HOLO_INSTALL_TYPE
 
 if [[ "${HOLO_INSTALL_TYPE}" == "1" ]]; then
@@ -135,13 +146,13 @@ if [[ "${HOLO_INSTALL_TYPE}" == "1" ]]; then
 	base_os_install
 	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
 
-elif [[ "${HOLO_INSTALL_TYPE}" == "2" ]]; then
+elif [[ "${HOLO_INSTALL_TYPE}" == "cockpenisyiff" ]]; then
 	echo "Installing SteamOS, gameonly configuration..."
 	base_os_install
 	gamescope_only_install
 	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
 
-elif [[ "${HOLO_INSTALL_TYPE}" == "3" ]]; then
+elif [[ "${HOLO_INSTALL_TYPE}" == "2" ]]; then
 	echo "Installing SteamOS, deckperience configuration..."
 	base_os_install
 	full_install

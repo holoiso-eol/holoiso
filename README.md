@@ -46,8 +46,8 @@ Installation process:
 **Installation types:**
 - barebones 
 > Barebones OS-only installation, resembles vanilla Arch Linux installation.
-- gameonly 
-> Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has Steam Deck UI installed.
+`- gameonly 
+> Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has Steam Deck UI installed.` This part is currently under a renovation.
 - deckperience
 > Full SteamOS 3 experience, Includes proper session switching, KDE Plasma and media apps, Chromium preinstalled.
 

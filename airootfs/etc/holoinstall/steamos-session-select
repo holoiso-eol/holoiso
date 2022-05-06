@@ -1,8 +1,0 @@
-#!/bin/zsh
-if [[ "${DESKTOP_SESSION}" == "plasma" ]]; then
-        sudo pkexec sed -i 's/plasma/gamescope-wayland/g' /etc/sddm.conf.d/autologin.conf
-        sudo pkill -f "gamescope*" && sudo systemctl restart display-manager
-    else
-        sudo pkexec sed -i 's/gamescope-wayland/plasma/g' /etc/sddm.conf.d/autologin.conf
-        sudo systemctl restart display-manager && sudo pkexec chvt 1 && sudo pkill -f "gamescope*"
-fi
