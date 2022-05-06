@@ -11,9 +11,9 @@ This project attempts to bring the Steam Deck's Holo OS into a generic, installa
 **Common Questions**
 
 - Is this official?
-> No, but it may as well be 99% of the way there. The code, and packages are straight from Valve with zero possible edits, and the ISO is being built on the official Steam Deck recovery image, running inside a QEMU instance.
+> No, but it may as well be 99% of the way there. The code and packages, are straight from Valve, with zero possible edits, and the ISO is being built on the official Steam Deck recovery image, running inside a QEMU instance.
 - The ISO didn't boot for me, any solution?
-> Currently, ISO only boots if flashed using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/), DD with 4MB block size, or [Rufus](https://rufus.ie) with DD mode.
+> Currently, the ISO only boots if flashed using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/), DD with 4MB block size, or [Rufus](https://rufus.ie) with DD mode.
 
 
 **Working stuff:**
@@ -31,8 +31,8 @@ This project attempts to bring the Steam Deck's Holo OS into a generic, installa
 
 **Known issues:**
 - NVIDIA GPUs are stuck on black screen or `Triggering uevents`. 
-> Solution: Boot with `nomodeset=1` and install [proprietary drivers](https://wiki.archlinux.org/title/NVIDIA). Keep in mind, that Steam Deck session won't work for now, delete `/etc/sddm.conf.d/autologin.conf` to avoid booting into black screen with infinite crash.
-- Intel GPUs/iGPUs require a Gamescope and MESA downgrade in order to boot into Steam Deck session. 
+> Solution: Boot with `nomodeset=1` and install [proprietary drivers](https://wiki.archlinux.org/title/NVIDIA). Keep in mind, that Steam Deck session won't work for now, delete `/etc/sddm.conf.d/autologin.conf` to avoid booting into a black screen with an infinite crash.
+- Intel GPUs/iGPUs require a Gamescope and MESA downgrade in order to boot into the Steam Deck session. 
 > Refer to [this gist](https://gist.github.com/drraccoony/8a8d0a9e3dfde9fafd3e374e418d2935) for further guidance.
 
 Installation process:
@@ -45,18 +45,19 @@ Installation process:
 
 **Installation types:**
 - barebones 
-> Barebones OS-only installation, resembles vanilla Arch Linux installation.
-`- gameonly 
-> Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has Steam Deck UI installed.` This part is currently under a renovation.
+> An OS-only installation, resembles vanilla Arch Linux installation.
+- gameonly*
+> Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has the Steam Deck UI installed. 
+> ****This part is currently under a renovation.***
 - deckperience
-> Full SteamOS 3 experience, Includes proper session switching, KDE Plasma and media apps, Chromium preinstalled.
+> Full SteamOS 3 experience, Includes proper session switching, KDE Plasma + media apps, and Chromium pre-installed.
 
 **Installation:**
 - Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) using [BalenaEtcher](https://www.balena.io/etcher/), [Rufus](https://rufus.ie) with DD mode, or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
 - Boot into ISO
 - Run `holoinstall`
 - Enter drive node, starting from, for example, `sda` or `nvme0n1` when asked
-- Take your favourite hot beverage, and wait till it installs :)
+- Take your favourite hot beverage, and wait 'till it installs :3
 
 Upon booting, you'll be greeted with Steam Deck's OOBE screen, from where you'll connect to your network, and login to your Steam account, from there, you can exit to KDE Plasma seamlessly by choosing *Switch to desktop* in the power menu, [like so](https://www.youtube.com/watch?v=smfwna2iHho).
 
