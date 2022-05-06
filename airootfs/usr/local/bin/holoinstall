@@ -7,6 +7,15 @@ CPU_VENDOR=$(cat /proc/cpuinfo | grep 'vendor' | uniq | cut -c 13-)
 SYSTEM_LOCALE="${SYSTEM_LOCALE:-en_US.UTF-8 UTF-8}"
 HOLO_INSTALL_DIR="${HOLO_INSTALL_DIR:-/mnt}"
 
+# Internet connectivity check
+wget -q --spider http://google.com
+if [ $? -eq 0 ]; then
+	echo "Internet check passed"
+else
+	echo -e "No Internet connection available, exiting\nUse wifi-menu util to connect WiFi"
+	exit
+fi
+
 if [[ "${CPU_VENDOR}" == "AuthenticAMD" ]]; then
 	UCODE_INSTALL_MSG="AMD CPU detected, installing AMD ucode..."
 	UCODE_INSTALL="amd-ucode"
@@ -57,12 +66,16 @@ base_os_install() {
 	read "?Enter your username for this installation: " HOLOUSER
 	read "?Enter your user password for this installation: " HOLOPASS
 	read "?Enter your root password for this installation: " ROOTPASS
-
+	read "?Enable passwordless sudo for $HOLOUSER (y/n): " PASSWDLESS
 	echo "\nCreating user ${HOLOUSER}..."
 	echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
 	echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
-	echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	if [[ ${PASSWDLESS} == "y" ]];then
+		echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	else
+		echo "${HOLOUSER} ALL=(root) ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	fi
 	chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 	echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
 
