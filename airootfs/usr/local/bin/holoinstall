@@ -7,6 +7,15 @@ CPU_VENDOR=$(cat /proc/cpuinfo | grep 'vendor' | uniq | cut -c 13-)
 SYSTEM_LOCALE="${SYSTEM_LOCALE:-en_US.UTF-8 UTF-8}"
 HOLO_INSTALL_DIR="${HOLO_INSTALL_DIR:-/mnt}"
 
+# Internet connectivity check
+wget -q --spider http://google.com
+if [ $? -eq 0 ]; then
+	echo "Internet check passed"
+else
+	echo -e "No Internet connection available, exiting\nUse wifi-menu util to connect WiFi"
+	exit
+fi
+
 if [[ "${CPU_VENDOR}" == "AuthenticAMD" ]]; then
 	UCODE_INSTALL_MSG="AMD CPU detected, installing AMD ucode..."
 	UCODE_INSTALL="amd-ucode"
