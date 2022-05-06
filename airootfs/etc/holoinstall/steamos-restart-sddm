@@ -1,3 +1,0 @@
-#!/bin/zsh
-	sudo pkill -f "gamescope*"
-fi

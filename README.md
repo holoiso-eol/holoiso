@@ -45,8 +45,8 @@ Prerequistes:
 
 Installation types:
 - 1) barebones: Barebones OS-only installation, resembles vanilla Arch Linux installation
-- 2) gameonly: Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has Steam Deck UI installed.
-- 3) deckperience: Full SteamOS 3 experience, Includes proper session switching, KDE Plasma and media apps, Chromium preinstalled
+- `2) gameonly: Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has Steam Deck UI installed.` This part is currently under a renovation.
+- 2) deckperience: Full SteamOS 3 experience, Includes proper session switching, KDE Plasma and media apps, Chromium preinstalled
 
 Installation:
 - Flash the ISO from the `Releases` tab using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/), [Rufus](https://rufus.ie) with DD mode, or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
