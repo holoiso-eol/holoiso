@@ -46,11 +46,10 @@ select_disk() {
 			DEVICE="/dev/$DISKNO"
 		fi 
 	fi
-	echo -n "${DEVICE}"
 }
 
 base_os_install() {
-	DEVICE=`select_disk`
+	select_disk
 
 	if [ -z "${DEVICE}" ]; then
 		echo "Exiting..."
@@ -163,15 +162,15 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable sddm
 }
 
+
 # The installer itself. Good wuck.
-select_disk
 echo "SteamOS 3 Installer, version SteamOS_Holo_RC1-20220505_0837_amdgpu-x86_64"
 echo "Start time: $(date)"
 echo "Please choose installation type:"
 echo "1) barebones: Barebones OS-only installation"
 echo "2) deckperience: Full SteamOS 3 experience"
 read "?Enter your choice here: " HOLO_INSTALL_TYPE
-
+echo ""
 if [[ "${HOLO_INSTALL_TYPE}" == "1" ]] || [[ "${HOLO_INSTALL_TYPE}" == "barebones" ]]; then
 	echo "Installing SteamOS, barebones configuration..."
 	base_os_install
