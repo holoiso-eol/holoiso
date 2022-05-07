@@ -30,8 +30,8 @@ This project attempts to bring the Steam Deck's Holo OS into a generic, installa
 - Cool-looking neofetch?
 
 **Known issues:**
-- NVIDIA GPUs are stuck on black screen or `Triggering uevents`. 
-> Solution: Boot with `nomodeset=1` and install [proprietary drivers](https://wiki.archlinux.org/title/NVIDIA). Keep in mind, that Steam Deck session won't work for now, delete `/etc/sddm.conf.d/autologin.conf` to avoid booting into black screen with infinite crash.
+- NVIDIA GPUs are NOT supported. Until they support atomic KMS + accelerated Xwayland + Vulkan DMA-BUF extensions.
+
 - Intel GPUs/iGPUs require a Gamescope and MESA downgrade in order to boot into Steam Deck session. 
 > Refer to [this gist](https://gist.github.com/drraccoony/8a8d0a9e3dfde9fafd3e374e418d2935) for further guidance.
 
