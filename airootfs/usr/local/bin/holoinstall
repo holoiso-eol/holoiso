@@ -1,7 +1,7 @@
 #!/bin/zsh
 # HoloISO Installer v2
 # This defines all of the current variables.
-CMD_PACMAN_INSTALL=(/usr/bin/pacman --noconfirm -S --needed)
+CMD_PACMAN_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*")
 CMD_PACMAN_UPDATE=(/usr/bin/pacman -Sy)
 CPU_VENDOR=$(cat /proc/cpuinfo | grep 'vendor' | uniq | cut -c 13-)
 SYSTEM_LOCALE="${SYSTEM_LOCALE:-en_US.UTF-8 UTF-8}"
@@ -95,25 +95,6 @@ base_os_install() {
 	echo "LANG=$(echo ${SYSTEM_LOCALE} | cut -d' ' -f1)" > ${HOLO_INSTALL_DIR}/etc/locale.conf	
 }
 
-gamescope_only_install() {
-	cp /etc/holoinstall/steamos-restart-sddm /mnt/usr/bin/steamos-session-select
-	cp /etc/holoinstall/steamos-update /mnt/usr/bin/steamos-update
-	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-session-select
-	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /usr/bin/steamos-update	
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	###
-	### To be replaced: arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} archlinux-keyring blueman bluez bluez-qt bluez-utils curl ffmpegthumbs gamescope git glxinfo go jupiter-hw-support lib32-pipewire lib32-pipewire-jack lib32-pipewire-v4l2 lib32-vulkan-radeon mangohud noto-fonts noto-fonts-cjk pipewire pipewire-alsa pipewire-jack pipewire-media-session pipewire-pulse pipewire-v4l2 steam-jupiter-stable tar vulkan-radeon yay zsh
-	###
-	### With: arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-gameonly pipewire-media-session vulkan-radeon lib32-vulkan-radeon
-	###
-	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
-
-	echo "\nConfiguring Steam Deck UI..."
-	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
-	echo "[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
-	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable sddm bluetooth
-}
-
 full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main pipewire-media-session vulkan-radeon lib32-vulkan-radeon
@@ -144,12 +125,6 @@ read "?Enter your choice here: " HOLO_INSTALL_TYPE
 if [[ "${HOLO_INSTALL_TYPE}" == "1" ]]; then
 	echo "Installing SteamOS, barebones configuration..."
 	base_os_install
-	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
-
-elif [[ "${HOLO_INSTALL_TYPE}" == "cockpenisyiff" ]]; then
-	echo "Installing SteamOS, gameonly configuration..."
-	base_os_install
-	gamescope_only_install
 	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
 
 elif [[ "${HOLO_INSTALL_TYPE}" == "2" ]]; then
