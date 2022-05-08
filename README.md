@@ -28,6 +28,7 @@ This project attempts to bring the Steam Deck's Holo OS into a generic, installa
 - Valve's exclusive *Vapor* appearance for KDE Plasma
 - Steam Deck pacman mirrors
 - Cool-looking neofetch?
+- System updates
 
 **Known issues:**
 - NVIDIA GPUs are ***NOT*** supported.
@@ -66,11 +67,13 @@ Upon booting, you'll be greeted with Steam Deck's OOBE screen, from where you'll
 
 Screenshots:
 -
-![image](https://user-images.githubusercontent.com/97450182/166166719-f5f6d692-7e15-4e77-8ad3-683b3a88d6c1.png)
-![image](https://user-images.githubusercontent.com/97450182/166270906-3868bacb-5cd2-4779-aeb3-4414e92d5f9a.png)
-![image](https://user-images.githubusercontent.com/97450182/166271041-05894cc6-e74b-4601-87fa-0d6e6276de86.png)
-![image](https://user-images.githubusercontent.com/97450182/166271108-719da5c5-97a8-47e6-b18d-7f8fc29a89d5.png)
-![image](https://user-images.githubusercontent.com/97450182/166271203-3d93714a-482e-48b6-91f5-3ca33112fc73.png)
+![Screenshot_20220508_133916](https://user-images.githubusercontent.com/97450182/167292656-1679e007-4701-4a3c-89ee-2104b5eb12cd.png)
+![Screenshot_20220508_133737](https://user-images.githubusercontent.com/97450182/167292672-8bc9032d-4a21-4528-ab7e-b9dbc25a0664.png)
+![Screenshot_20220508_133746](https://user-images.githubusercontent.com/97450182/167292722-a68806c1-5768-4790-a8e7-108d7c72bb08.png)
+![Screenshot_20220508_133822](https://user-images.githubusercontent.com/97450182/167292731-86fed590-0260-4c5e-ac13-05d284b5fd24.png)
+![Screenshot_20220508_134038](https://user-images.githubusercontent.com/97450182/167292734-90036b5f-2571-438e-8951-8d731cd4ae93.png)
+![Screenshot_20220508_134051](https://user-images.githubusercontent.com/97450182/167292738-a70d266f-814d-4352-8d38-b920ae3f3381.png)
+
 
 Notes:
 -
