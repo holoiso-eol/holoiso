@@ -109,7 +109,7 @@ base_os_install() {
 	echo "\nInstalling bootloader..."
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	mkdir ${HOLO_INSTALL_DIR}/boot/efi
-	mount -t vfat ${INSTALL_DEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
+	mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} core/grub efibootmgr inetutils mkinitcpio neofetch networkmanager sddm
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd
 	arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
