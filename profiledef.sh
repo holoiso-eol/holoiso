@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
-iso_name="SteamOS_Holo_RC1"
+iso_name="SteamOS_Holo"
 iso_label="HOLO_$(date +%Y%m)"
 iso_publisher="theVakhovske <https://github.com/bhaiest>"
 iso_application="SteamOS Live/Rescue CD"
