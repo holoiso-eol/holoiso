@@ -54,7 +54,7 @@ base_os_install() {
 	echo "\nPartitioning complete, mounting and pacstrapping..."
 	echo "${UCODE_INSTALL_MSG}"
 	mount -t btrfs -o subvol=/,compress-force=zstd:1,discard,noatime,nodiratime ${root_partition} ${HOLO_INSTALL_DIR}
-	pacstrap --noconfirm ${HOLO_INSTALL_DIR} base base-devel ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune-dri linux-neptune-dri-headers linux-firmware
+	pacstrap -i ${HOLO_INSTALL_DIR} base base-devel ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune-dri linux-neptune-dri-headers linux-firmware
 
 	echo "\nBase system installation done, generating fstab..."
 	genfstab -U -p /mnt >> /mnt/etc/fstab
