@@ -61,11 +61,43 @@ base_os_install() {
 	cp /etc/pacman.conf /mnt/etc/pacman.conf
 	cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist
 
-	read "?Enter your hostname for this installation: " HOLOHOSTNAME
+	read "?Enter hostname for this installation: " HOLOHOSTNAME
 	echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
-	read "?Enter your username for this installation: " HOLOUSER
-	read "?Enter your user password for this installation: " HOLOPASS
-	read "?Enter your root password for this installation: " ROOTPASS
+	# Setup password for root
+	while true; do
+		echo -n "Enter \"root\" password for this installation(will not echo): "
+		read -s ROOTPASS
+		echo
+		echo -n "Enter \"root\" password for this installation(again): "
+		read -s ROOTPASS_CONF
+		echo
+		if [ $ROOTPASS = $ROOTPASS_CONF ]; then
+			break
+		fi
+		echo "Error: Password does not match."
+	done
+	# Create user
+	while true; do
+		read "?Enter username for this installation: " HOLOUSER
+		if [ $HOLOUSER = "root" ]; then
+			echo "User \"root\" already exists!"
+		else
+			break
+		fi
+	done
+	# Setup password for user
+	while true; do
+		echo -n "Enter \"$HOLOUSER\" password for this installation(will not echo): "
+		read -s HOLOPASS
+		echo
+		echo -n "Enter \"$HOLOUSER\" password for this installation(again): "
+		read -s HOLOPASS_CONF
+		echo
+		if [ $HOLOPASS = $HOLOPASS_CONF ]; then
+			break
+		fi
+		echo "Error: Password does not match."
+	done
 	echo "\nCreating user ${HOLOUSER}..."
 	echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
