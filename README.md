@@ -1,5 +1,4 @@
  ![image](https://user-images.githubusercontent.com/97450182/166438178-abb068d0-ce36-4611-aefe-deb6fbc1ab51.png)
-# Major note for now: Before installing, please run curl https://raw.githubusercontent.com/theVakhovskeIsTaken/holoiso/3.0/airootfs/etc/pacman.conf -o /etc/pacman.conf because my main domain is dead
 # HoloISO
 SteamOS 3 (Holo) archiso configuration.
 
