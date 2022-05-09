@@ -24,49 +24,20 @@ else
 	UCODE_INSTALL="intel-ucode"
 fi
 
-select_disk() {
-	local ALLDISKS=(`lsblk -o NAME,TYPE -lnp | grep disk | awk '{ print $1 }'`)
-	i=1
-	for disk in $ALLDISKS; do
-		echo "${i}. ${disk}"
-		i=$((i+1))
-	done
-
-	read "?Enter your desired disk number here (or, if not available, enter the disk's name manually): " DISKNO
-	read "?WARNING: This drive is going to be erased fully. Press enter to continue, or CTRL+Z to terminate"
-
-	# if $DISKNO is numeric
-	if [[ "$DISKNO" == <-> ]]; then
-		DISKNO=$((DISKNO-1))
-		DEVICE="${ALLDISKS:${DISKNO}}"
-	else
-		if [[ "$DISKNO" =~ "^/dev/" ]]; then
-			DEVICE="$DISKNO"
-		else
-			DEVICE="/dev/$DISKNO"
-		fi 
-	fi
-}
-
 base_os_install() {
-	select_disk
-
-	if [ -z "${DEVICE}" ]; then
-		echo "Exiting..."
-		exit 0
+	lsblk
+	read "?Enter your desired drive node here (for example, sda or nvme0n1): " DRIVEDEVICE
+	read "?WARNING: This drive is going to be erased fully. Press enter to continue, or CTRL+Z to terminate"
+	
+	DEVICE="/dev/${DRIVEDEVICE}"
+	
+	INSTALLDEVICE="${DEVICE}"
+	echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
+	if [ $? -eq 0 ]; then
+		INSTALLDEVICE="${DEVICE}p"
 	fi
-
-	if ! [ -b "${DEVICE}" ]; then
-		echo "${DEVICE} is not a block device. Exiting..."
-		exit 1
-	fi
-
-	INSTALL_DEVICE="${DEVICE}"
-	if echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"; then
-		INSTALL_DEVICE="${DEVICE}p"
-	fi
-
-	echo "\nPartitioning drive..."
+	
+	echo "\nCreating partitions..."
 	sfdisk --delete ${DEVICE}
 	wipefs -a ${DEVICE}
 	parted ${DEVICE} mklabel gpt
@@ -74,16 +45,16 @@ base_os_install() {
 	parted ${DEVICE} set 1 boot on
 	parted ${DEVICE} set 1 esp on
 	parted ${DEVICE} mkpart primary btrfs 256M 100%
-	root_partition="${INSTALL_DEVICE}2"
-	mkfs -t vfat ${INSTALL_DEVICE}1
-	fatlabel ${INSTALL_DEVICE}1 HOLOEFI
+	root_partition="${INSTALLDEVICE}2"
+	mkfs -t vfat ${INSTALLDEVICE}1
+	fatlabel ${INSTALLDEVICE}1 HOLOEFI
 	mkfs -t btrfs -f ${root_partition}
 	btrfs filesystem label ${root_partition} holo-root
 
 	echo "\nPartitioning complete, mounting and pacstrapping..."
 	echo "${UCODE_INSTALL_MSG}"
 	mount -t btrfs -o subvol=/,compress-force=zstd:1,discard,noatime,nodiratime ${root_partition} ${HOLO_INSTALL_DIR}
-	pacstrap -i ${HOLO_INSTALL_DIR} base base-devel ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune-dri linux-neptune-headers linux-firmware
+	pacstrap --noconfirm ${HOLO_INSTALL_DIR} base base-devel ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune-dri linux-neptune-headers linux-firmware
 
 	echo "\nBase system installation done, generating fstab..."
 	genfstab -U -p /mnt >> /mnt/etc/fstab
@@ -95,16 +66,11 @@ base_os_install() {
 	read "?Enter your username for this installation: " HOLOUSER
 	read "?Enter your user password for this installation: " HOLOPASS
 	read "?Enter your root password for this installation: " ROOTPASS
-	read "?Enable passwordless sudo for $HOLOUSER (y/n): " PASSWDLESS
 	echo "\nCreating user ${HOLOUSER}..."
 	echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
 	echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
-	if [[ ${PASSWDLESS} == "y" ]];then
-		echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
-	else
-		echo "${HOLOUSER} ALL=(root) ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
-	fi
+	echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 	chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 	echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
 
@@ -140,7 +106,7 @@ full_install() {
 
 
 # The installer itself. Good wuck.
-echo "SteamOS 3 Installer, version SteamOS_Holo_RC1-20220505_0837_amdgpu-x86_64"
+echo "SteamOS 3 Installer"
 echo "Start time: $(date)"
 echo "Please choose installation type:"
 echo "1) barebones: Barebones OS-only installation"
