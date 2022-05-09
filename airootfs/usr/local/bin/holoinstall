@@ -83,7 +83,7 @@ base_os_install() {
 	echo "\nPartitioning complete, mounting and pacstrapping..."
 	echo "${UCODE_INSTALL_MSG}"
 	mount -t btrfs -o subvol=/,compress-force=zstd:1,discard,noatime,nodiratime ${root_partition} ${HOLO_INSTALL_DIR}
-	pacstrap -i ${HOLO_INSTALL_DIR} base base-devel ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune linux-neptune-headers linux-firmware
+	pacstrap -i ${HOLO_INSTALL_DIR} base base-devel ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune-dri linux-neptune-headers linux-firmware
 
 	echo "\nBase system installation done, generating fstab..."
 	genfstab -U -p /mnt >> /mnt/etc/fstab
@@ -126,7 +126,7 @@ base_os_install() {
 
 full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main pipewire-media-session vulkan-radeon lib32-vulkan-radeon
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main holoiso-updateclient wireplumber vulkan-radeon lib32-vulkan-radeon
 
 	echo "\nConfiguring Steam Deck UI by default..."
 	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
