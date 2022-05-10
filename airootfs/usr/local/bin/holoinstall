@@ -43,9 +43,9 @@ base_os_install() {
 		exit 1
 	fi
 	
-	echo "\n\nWARNING: The following drive is going to be erased fully. ALL DATA ON DRIVE $DEVICE WILL BE LOST!"
+	echo "\n\nWARNING: The following drive is going to be erased fully. ALL DATA ON DRIVE $DEVICE WILL BE LOST!\n"
 	lsblk $DEVICE
-	echo -n "Erase $DEVICE and begin installation(y/N): "
+	echo -n "\nErase $DEVICE and begin installation(y/N): "
 	read ANS
 	
 	if [[ ! ($ANS = 'y' || $ANS = 'Y') ]]; then
