@@ -27,14 +27,30 @@ fi
 base_os_install() {
 	lsblk
 	read "?Enter your desired drive node here (for example, sda or nvme0n1): " DRIVEDEVICE
-	read "?WARNING: This drive is going to be erased fully. Press enter to continue, or CTRL+Z to terminate"
+	#read "?WARNING: This drive is going to be erased fully. Press enter to continue, or CTRL+Z to terminate"
 	
 	DEVICE="/dev/${DRIVEDEVICE}"
 	
 	INSTALLDEVICE="${DEVICE}"
+	
 	echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
 	if [ $? -eq 0 ]; then
 		INSTALLDEVICE="${DEVICE}p"
+	fi
+	
+	if [ ! -b $DEVICE ]; then
+		echo "$DEVICE not found! Installation Aborted!"
+		exit 1
+	fi
+	
+	echo "\n\nWARNING: The following drive is going to be erased fully. ALL DATA ON DRIVE $DEVICE WILL BE LOST!\n"
+	lsblk $DEVICE
+	echo -n "\nErase $DEVICE and begin installation(y/N): "
+	read ANS
+	
+	if [[ ! ($ANS = 'y' || $ANS = 'Y') ]]; then
+		echo "Installation Aborted!"
+		exit 1
 	fi
 	
 	echo "\nCreating partitions..."
