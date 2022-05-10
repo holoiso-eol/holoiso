@@ -149,7 +149,8 @@ full_install() {
 	cp /etc/holoinstall/steamos-gamemode.desktop /mnt/home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable cups bluetooth sddm
-	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}	
+	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
+	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} steam
 }
 
 
