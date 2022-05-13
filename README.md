@@ -85,6 +85,7 @@ Building the ISO:
 -
 Trigger the build by executing:
 ```
+pacman -Sy archiso
 git clone https://github.com/bhaiest/holoiso/
 sudo mkarchiso -v holoiso
 ```
