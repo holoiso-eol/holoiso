@@ -153,6 +153,8 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable cups bluetooth sddm
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
 	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} steam
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} flatpak
+	arch-chroot ${HOLO_INSTALL_DIR} flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
 
