@@ -70,7 +70,7 @@ base_os_install() {
 	echo "\nPartitioning complete, mounting and pacstrapping..."
 	echo "${UCODE_INSTALL_MSG}"
 	mount -t btrfs -o subvol=/,compress-force=zstd:1,discard,noatime,nodiratime ${root_partition} ${HOLO_INSTALL_DIR}
-	pacstrap -i ${HOLO_INSTALL_DIR} base base-devel ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune-dri linux-neptune-dri-headers linux-firmware
+	pacstrap -i ${HOLO_INSTALL_DIR} base ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune-dri linux-neptune-dri-headers linux-firmware
 
 	echo "\nBase system installation done, generating fstab..."
 	genfstab -U -p /mnt >> /mnt/etc/fstab
@@ -135,7 +135,8 @@ base_os_install() {
 	echo "\nSetting up locale..."
 	echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
 	arch-chroot ${HOLO_INSTALL_DIR} locale-gen
-	echo "LANG=$(echo ${SYSTEM_LOCALE} | cut -d' ' -f1)" > ${HOLO_INSTALL_DIR}/etc/locale.conf	
+	echo "LANG=$(echo ${SYSTEM_LOCALE} | cut -d' ' -f1)" > ${HOLO_INSTALL_DIR}/etc/locale.conf
+	pacstrap -i ${HOLO_INSTALL_DIR} base-devel core/linux-headerslinux-neptune-dri-headers
 }
 
 full_install() {
