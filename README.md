@@ -30,7 +30,9 @@ This project attempts to bring the Steam Deck's Holo OS into a generic, installa
 - System updates
 
 **Known issues:**
-- NVIDIA GPUs are ***NOT*** supported.
+- NVIDIA GPUs are supported after following this procedure:
+
+> Only 9xx+ GPUs are supported. Driver 515 beta required + Compiled gamescope from master branch
 
 > Until they support atomic KMS, accelerated Xwayland, and Vulkan DMA-BUF extensions, they simply cannot function properly with HoloISO.
 
