@@ -16,6 +16,16 @@ else
 	exit
 fi
 
+# Update system time
+if [ $(timedatectl status | grep -c "NTP service: active") -ne 1 ]; then
+	# If NTP is not active, enable it.
+	timedatectl set-ntp true
+	
+	# Update the hardware clock.
+	hwclock --systohc
+fi
+
+
 if [[ "${CPU_VENDOR}" == "AuthenticAMD" ]]; then
 	UCODE_INSTALL_MSG="AMD CPU detected, installing AMD ucode..."
 	UCODE_INSTALL="amd-ucode"
