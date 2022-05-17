@@ -34,7 +34,7 @@ This project attempts to bring the Steam Deck's Holo OS into a generic, installa
 
 > Only 9xx+ GPUs are supported. Driver 515 beta required + Compiled gamescope from master branch
 
-> Until they support atomic KMS, accelerated Xwayland, and Vulkan DMA-BUF extensions, they simply cannot function properly with HoloISO.
+> Older GPUs won't be supported until drivers are opensourced OR Until they support atomic KMS, accelerated Xwayland, and Vulkan DMA-BUF extensions, they simply cannot function properly with HoloISO.
 
 - Intel GPUs/iGPUs require a Gamescope and MESA downgrade in order to boot into Steam Deck session. 
 
