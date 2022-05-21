@@ -139,8 +139,9 @@ base_os_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} core/grub efibootmgr inetutils mkinitcpio neofetch networkmanager sddm-wayland
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd
 	arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
+	cp /etc/holoinstall/10_linux ${HOLO_INSTALL_DIR}/etc/grub.d/10_linux
+	cp /etc/holoinstall/grubdefault ${HOLO_INSTALL_DIR}/etc/default.grub
 	arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
-	arch-chroot ${HOLO_INSTALL_DIR} sed -i 's/Arch Linux/SteamOS/g' /boot/grub/grub.cfg
 
 	echo "\nSetting up locale..."
 	echo "${SYSTEM_LOCALE}" >> ${HOLO_INSTALL_DIR}/etc/locale.gen
