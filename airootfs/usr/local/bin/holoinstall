@@ -136,7 +136,7 @@ base_os_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	mkdir ${HOLO_INSTALL_DIR}/boot/efi
 	mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} core/grub efibootmgr inetutils mkinitcpio neofetch networkmanager sddm
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} core/grub efibootmgr inetutils mkinitcpio neofetch networkmanager sddm-wayland
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd
 	arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
 	arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
@@ -150,11 +150,11 @@ base_os_install() {
 
 full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main holoiso-updateclient wireplumber vulkan-radeon lib32-vulkan-radeon
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main holoiso-updateclient wireplumber vulkan-radeon lib32-vulkan-radeon extra/vulkan-intel multilib/lib32-vulkan-intel
 
 	echo "\nConfiguring Steam Deck UI by default..."
 	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
-	echo "[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
+	echo "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
 	mkdir /mnt/home/${HOLOUSER}/Desktop
 	cp /etc/holoinstall/steamos-gamemode.desktop /mnt/home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
