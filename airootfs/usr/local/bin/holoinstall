@@ -70,17 +70,22 @@ base_os_install() {
 	parted ${DEVICE} mkpart primary fat32 2M 256M
 	parted ${DEVICE} set 1 boot on
 	parted ${DEVICE} set 1 esp on
-	parted ${DEVICE} mkpart primary btrfs 256M 100%
+	parted ${DEVICE} mkpart primary btrfs 256M 24G
+    parted ${DEVICE} mkpart primary ext4 24G 100%
 	root_partition="${INSTALLDEVICE}2"
 	mkfs -t vfat ${INSTALLDEVICE}1
 	fatlabel ${INSTALLDEVICE}1 HOLOEFI
 	mkfs -t btrfs -f ${root_partition}
+	mkfs -t ext4 ${INSTALLDEVICE}3
+	home_partition="${INSTALLDEVICE}3"
 	btrfs filesystem label ${root_partition} holo-root
+	e2label "${INSTALLDEVICE}3" holo-home
 
 	echo "\nPartitioning complete, mounting and pacstrapping..."
 	echo "${UCODE_INSTALL_MSG}"
 	mount -t btrfs -o subvol=/,compress-force=zstd:1,discard,noatime,nodiratime ${root_partition} ${HOLO_INSTALL_DIR}
 	pacstrap -i ${HOLO_INSTALL_DIR} base base-devel ${UCODE_INSTALL} core/linux core/linux-headers linux-neptune-dri linux-neptune-dri-headers linux-firmware
+	mount -t ext4 ${home_partition} ${HOLO_INSTALL_DIR}/home
 
 	echo "\nBase system installation done, generating fstab..."
 	genfstab -U -p /mnt >> /mnt/etc/fstab
