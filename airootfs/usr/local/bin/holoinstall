@@ -166,17 +166,21 @@ full_install() {
     	echo "2) Intel: Will install older Gamescope that's compatible with Intel GPUs but without Mangohud and FSR support"
     	read "?Enter your choice here: " HOLO_GPU_TYPE
 
-    	if [[ "${HOLO_GPU_TYPE}" == "1" ]]; then
-        	echo "Installing gamescope for AMD GPUs..."
-		sudo sed -i "s#IgnorePkg = gamescope #IgnorePkg = #g" /etc/pacman.conf
-        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" vulkan-radeon lib32-vulkan-radeon gamescope)
-    	elif [[ "${HOLO_GPU_TYPE}" == "2" ]]; then
-        	echo "Installing gamescope for Intel GPUs..."
-        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/vulkan-intel multilib-lib32-vulkan-intel extra/mesa multilib/lib32-mesa holo/gamescope)
-    	else
-        	echo "Nothing choosed or Invalid choice. Installing gamescope for Intel GPUs..."
-        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/mesa multilib/lib32-mesa holo/gamescope)
-    fi
+	while true
+	do
+		if [[ "${HOLO_GPU_TYPE}" == "1" ]]; then
+	        	echo "Installing gamescope for AMD GPUs..."
+			sudo sed -i "s#IgnorePkg = gamescope #IgnorePkg = #g" /etc/pacman.conf
+	        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" vulkan-radeon lib32-vulkan-radeon gamescope)
+			break
+	    	elif [[ "${HOLO_GPU_TYPE}" == "2" ]]; then
+	        	echo "Installing gamescope for Intel GPUs..."
+	        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/vulkan-intel multilib-lib32-vulkan-intel extra/mesa multilib/lib32-mesa holo/gamescope)
+			break
+	    	else
+        		echo -e "You have made an invalid selection, please try again...\n"
+		fi
+	done
 	echo "\nConfiguring Steam Deck UI by default..."
 	arch-chroot ${HOLO_INSTALL_DIR} ${GAMESCOPE_INSTALL}
 	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
