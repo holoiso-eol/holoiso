@@ -38,7 +38,7 @@ This project attempts to bring the Steam Deck's Holo OS into a generic, installa
 
 - Intel GPUs/iGPUs require a Gamescope and MESA downgrade in order to boot into Steam Deck session. 
 
-> Run `sudo pacman -S extra/mesa multilib/lib32-mesa holo/gamescope` once booted.
+> Choose your GPU type while installing HoloISO.
 
 Installation process:
 -

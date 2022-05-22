@@ -155,10 +155,29 @@ base_os_install() {
 }
 
 full_install() {
+    echo "Installing full SteamOS 3..."
+    sleep 1
+    echo "Please choose your current GPU:"
+    echo "1) AMD only: Will install updated Gamescope with Mangohud and FSR support"
+    echo "2) Intel: Will install older Gamescope that's compatible with Intel GPUs but without Mangohud and FSR support"
+    read "?Enter your choice here: " HOLO_GPU_TYPE
+
+    if [[ "${HOLO_GPU_TYPE}" == "1" ]]; then
+        echo "Installing gamescope for AMD GPUs..."
+        GAMESCOPE_INSTALL="gamescope mesa lib32-mesa"
+    elif [[ "${HOLO_GPU_TYPE}" == "2" ]]; then
+        echo "Installing gamescope for Intel GPUs..."
+        GAMESCOPE_INSTALL="extra/mesa multilib/lib32-mesa holo/gamescope"
+    else
+        echo "Nothing choosed or Invalid choice. Installing gamescope for Intel GPUs..."
+        GAMESCOPE_INSTALL="extra/mesa multilib/lib32-mesa holo/gamescope"
+    fi
+    # The actual installation begins here:
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main holoiso-updateclient wireplumber vulkan-radeon lib32-vulkan-radeon extra/vulkan-intel multilib/lib32-vulkan-intel
 
 	echo "\nConfiguring Steam Deck UI by default..."
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} ${GAMESCOPE_INSTALL}
 	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
 	echo "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
 	mkdir /mnt/home/${HOLOUSER}/Desktop
