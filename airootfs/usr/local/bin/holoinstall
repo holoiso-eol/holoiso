@@ -159,7 +159,7 @@ full_install() {
     sleep 1
     # The actual installation begins here:
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main holoiso-updateclient wireplumber vulkan-radeon lib32-vulkan-radeon extra/vulkan-intel multilib/lib32-vulkan-intel
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main holoiso-updateclient wireplumber
 	sleep 1
    	echo "Please choose your current GPU:"
     	echo "1) AMD only: Will install updated Gamescope with Mangohud and FSR support"
@@ -168,10 +168,11 @@ full_install() {
 
     	if [[ "${HOLO_GPU_TYPE}" == "1" ]]; then
         	echo "Installing gamescope for AMD GPUs..."
-        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" gamescope)
+		sudo sed -i "s#IgnorePkg = gamescope #IgnorePkg = #g" /etc/pacman.conf
+        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" vulkan-radeon lib32-vulkan-radeon gamescope)
     	elif [[ "${HOLO_GPU_TYPE}" == "2" ]]; then
         	echo "Installing gamescope for Intel GPUs..."
-        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/mesa multilib/lib32-mesa holo/gamescope)
+        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/vulkan-intel multilib-lib32-vulkan-intel extra/mesa multilib/lib32-mesa holo/gamescope)
     	else
         	echo "Nothing choosed or Invalid choice. Installing gamescope for Intel GPUs..."
         	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/mesa multilib/lib32-mesa holo/gamescope)
