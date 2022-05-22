@@ -161,13 +161,13 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main holoiso-updateclient wireplumber
 	sleep 1
-   	echo "Please choose your current GPU:"
-    	echo "1) AMD only: Will install updated Gamescope with Mangohud and FSR support"
-    	echo "2) Intel: Will install older Gamescope that's compatible with Intel GPUs but without Mangohud and FSR support"
-    	read "?Enter your choice here: " HOLO_GPU_TYPE
-
 	while true
 	do
+	   	echo "Please choose your current GPU:"
+	    	echo "1) AMD only: Will install updated Gamescope with Mangohud and FSR support"
+	    	echo "2) Intel: Will install older Gamescope that's compatible with Intel GPUs but without Mangohud and FSR support"
+	    	read "?Enter your choice here: " HOLO_GPU_TYPE
+
 		if [[ "${HOLO_GPU_TYPE}" == "1" ]]; then
 	        	echo "Installing gamescope for AMD GPUs..."
 			sudo sed -i "s#IgnorePkg = gamescope #IgnorePkg = #g" /etc/pacman.conf
