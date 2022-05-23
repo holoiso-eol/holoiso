@@ -45,7 +45,8 @@ Installation process:
 -
 **Prerequistes:**
 - 4GB flash drive
-- AMD GPU with Vulkan and VDPAU support
+- AMD RX Vega+/APU iGPU; 4xx/5xx, 5xxx/6xxx GPU
+or Intel UHD 630+ iGPU
 - UEFI-enabled device
 - Disabled secure boot
 
