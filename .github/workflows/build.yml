@@ -25,7 +25,7 @@ jobs:
 
       - name: Build ISO File
         run: |
-          sudo mkarchiso -v holoiso
+          mkarchiso -v holoiso
           find .
 
       - uses: actions/upload-artifact@v2
