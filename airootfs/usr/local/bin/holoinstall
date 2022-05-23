@@ -70,8 +70,15 @@ base_os_install() {
 	parted ${DEVICE} mkpart primary fat32 2M 256M
 	parted ${DEVICE} set 1 boot on
 	parted ${DEVICE} set 1 esp on
-	parted ${DEVICE} mkpart primary btrfs 256M 24G
-    	parted ${DEVICE} mkpart primary ext4 24G 100%
+	# If the available storage is less than 64GB, don't create /home.
+	# If the boot device is mmcblk0, don't create an ext4 partition or it will break steamOS versions
+	# released after May 20.
+	if [ "$(awk '/'${DEVICE}'/ {print $3; exit}' /proc/partitions)" -lt 64000000 ] || [[ "${DEVICE}" =~ mmcblk0 ]]; then
+		parted ${DEVICE} mkpart primary btrfs 256M 100%
+	else
+		parted ${DEVICE} mkpart primary btrfs 256M 24G
+	    	parted ${DEVICE} mkpart primary ext4 24G 100%
+	fi
 	root_partition="${INSTALLDEVICE}2"
 	mkfs -t vfat ${INSTALLDEVICE}1
 	fatlabel ${INSTALLDEVICE}1 HOLOEFI
@@ -159,23 +166,28 @@ full_install() {
     sleep 1
     # The actual installation begins here:
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main holoiso-updateclient wireplumber vulkan-radeon lib32-vulkan-radeon extra/vulkan-intel multilib/lib32-vulkan-intel
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} holoiso-main holoiso-updateclient wireplumber
 	sleep 1
-   	echo "Please choose your current GPU:"
-    	echo "1) AMD only: Will install updated Gamescope with Mangohud and FSR support"
-    	echo "2) Intel: Will install older Gamescope that's compatible with Intel GPUs but without Mangohud and FSR support"
-    	read "?Enter your choice here: " HOLO_GPU_TYPE
+	while true
+	do
+	   	echo "Please choose your current GPU:"
+	    	echo "1) AMD only: Will install updated Gamescope with Mangohud and FSR support"
+	    	echo "2) Intel: Will install older Gamescope that's compatible with Intel GPUs but without Mangohud and FSR support"
+	    	read "?Enter your choice here: " HOLO_GPU_TYPE
 
-    	if [[ "${HOLO_GPU_TYPE}" == "1" ]]; then
-        	echo "Installing gamescope for AMD GPUs..."
-        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" gamescope)
-    	elif [[ "${HOLO_GPU_TYPE}" == "2" ]]; then
-        	echo "Installing gamescope for Intel GPUs..."
-        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/mesa multilib/lib32-mesa holo/gamescope)
-    	else
-        	echo "Nothing choosed or Invalid choice. Installing gamescope for Intel GPUs..."
-        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/mesa multilib/lib32-mesa holo/gamescope)
-    fi
+		if [[ "${HOLO_GPU_TYPE}" == "1" ]]; then
+	        	echo "Installing gamescope for AMD GPUs..."
+			arch-chroot ${HOLO_INSTALL_DIR} sed -i "s#IgnorePkg = gamescope #IgnorePkg = #g" /etc/pacman.conf
+	        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" vulkan-radeon lib32-vulkan-radeon gamescope)
+			break
+	    	elif [[ "${HOLO_GPU_TYPE}" == "2" ]]; then
+	        	echo "Installing gamescope for Intel GPUs..."
+	        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/vulkan-intel multilib-lib32-vulkan-intel extra/mesa multilib/lib32-mesa holo/gamescope)
+			break
+	    	else
+        		echo -e "You have made an invalid selection, please try again...\n"
+		fi
+	done
 	echo "\nConfiguring Steam Deck UI by default..."
 	arch-chroot ${HOLO_INSTALL_DIR} ${GAMESCOPE_INSTALL}
 	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
@@ -187,8 +199,9 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} chown -R ${HOLOUSER}:${HOLOUSER} /home/${HOLOUSER}/Desktop
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable cups bluetooth sddm holoiso-reboot-tracker
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
+	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G wheel ${HOLOUSER}
 	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} steam
-	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} flatpak
+	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} flatpak packagekit-qt5 rsync unzip vim
 	arch-chroot ${HOLO_INSTALL_DIR} flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
