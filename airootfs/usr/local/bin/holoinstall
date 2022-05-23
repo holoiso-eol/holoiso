@@ -196,6 +196,12 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} steam
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} flatpak packagekit-qt5 rsync unzip vim
 	arch-chroot ${HOLO_INSTALL_DIR} flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+	# Starting with the May 20 update, if /home is on mmcblk0p3 the OS will fail to boot.
+	# Removing the udev rule corrects it, but this is not a long term solution, and may be reverted
+	# so preserve the udev rule.
+	if [[ "${DEVICE}" =~ mmcblk0 ]]; then
+		arch-chroot ${HOLO_INSTALL_DIR} mv /usr/lib/udev/rules.d/99-sdcard-mount.rules /root
+	fi
 }
 
 
