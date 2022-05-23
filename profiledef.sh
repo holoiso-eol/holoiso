@@ -3,7 +3,7 @@
 
 iso_name="SteamOS_Holo"
 iso_label="HOLO_$(date +%Y%m)"
-iso_publisher="$(git config --get user.name) <$(git config --get remote.origin.url | sed "s#^.*:#https://www.github.com/#g")>"
+iso_publisher="theVakhovske <https://github.com/bhaiest>"
 iso_application="SteamOS Live/Rescue CD"
 iso_version="$(date +%Y%m%d_%H%M)_amdgpu"
 install_dir="arch"

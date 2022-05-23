@@ -73,7 +73,7 @@ base_os_install() {
 	# If the available storage is less than 64GB, don't create /home.
 	# If the boot device is mmcblk0, don't create an ext4 partition or it will break steamOS versions
 	# released after May 20.
-	if [ "$(awk '/'${DEVICE}'/ {print $3; exit}' /proc/partitions)" -lt 64000000 ] || [[ "${DEVICE}" =~ mmcblk0 ]]; then
+	if [ "$(awk '/'${DRIVEDEVICE}'/ {print $3; exit}' /proc/partitions)" -lt 64000000 ] || [[ "${DEVICE}" =~ mmcblk0 ]]; then
 		parted ${DEVICE} mkpart primary btrfs 256M 100%
 	else
 		parted ${DEVICE} mkpart primary btrfs 256M 24G
