@@ -203,6 +203,7 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} steam
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} flatpak packagekit-qt5 rsync unzip vim
 	arch-chroot ${HOLO_INSTALL_DIR} flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+	arch-chroot ${HOLO_INSTALL_DIR} echo "recoveryinit" > /root/.bashrc
 }
 
 
