@@ -25,10 +25,11 @@ jobs:
 
       - name: Build ISO File
         run: |
+          cd ..
           mkarchiso -v holoiso
           find .
 
       - uses: actions/upload-artifact@v2
         with:
           name: holoiso
-          path: ./out/*.iso
+          path: ../out/*.iso
