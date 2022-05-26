@@ -187,6 +187,7 @@ full_install() {
 	        	echo "Installing gamescope for NVIDIA GPUs..."
 	        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" holoiso/nvidia-utils holoiso/nvidia-dkms holoiso/opencl-nvidia gamescope)
 			sed -i 's/splash/splash nvidia-drm.modeset=1/g' ${HOLO_INSTALL_DIR}/etc/default/grub
+			arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
 			break
 	    	else
         		echo -e "You have made an invalid selection, please try again...\n"
@@ -208,7 +209,6 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} flatpak packagekit-qt5 rsync unzip vim
 	arch-chroot ${HOLO_INSTALL_DIR} flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	arch-chroot ${HOLO_INSTALL_DIR} echo "recoveryinit" > /root/.bashrc
-	arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 
