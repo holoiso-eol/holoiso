@@ -181,7 +181,8 @@ full_install() {
 			break
 	    	elif [[ "${HOLO_GPU_TYPE}" == "2" ]]; then
 	        	echo "Installing gamescope for Intel GPUs..."
-	        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" vulkan-intel-steamos lib32-vulkan-intel-steamos mesa-steamos lib32-mesa-steamos gamescope)
+			sed -i 's/linux-firmware/linux-firmware gamescope mesa lib32-mesa/g' ${HOLO_INSTALL_DIR}/etc/pacman.conf
+	        	GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" extra/vulkan-intel multilib-lib32-vulkan-intel extra/mesa multilib/lib32-mesa holo/gamescope)
 			break
 	    	elif [[ "${HOLO_GPU_TYPE}" == "3" ]]; then
 	        	echo "Installing gamescope for NVIDIA GPUs..."
