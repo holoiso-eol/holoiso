@@ -35,7 +35,7 @@ Click [here](https://t.me/HoloISO) to join **HoloISO** Telegram update channel
 **Known issues:**
 - NVIDIA GPUs are supported after following this procedure:
 
-> Only 9xx+ GPUs are supported. Driver 515 beta required + Compiled gamescope from master branch
+> Only 9xx+ GPUs are supported. Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install required packages.
 
 > Older GPUs won't be supported until drivers are opensourced OR Until they support atomic KMS, accelerated Xwayland, and Vulkan DMA-BUF extensions, they simply cannot function properly with HoloISO.
 
@@ -48,7 +48,7 @@ Installation process:
 **Prerequistes:**
 - 4GB flash drive
 - AMD RX Vega+/APU iGPU; 4xx/5xx, 5xxx/6xxx GPU
-or Intel UHD 630+ iGPU
+or Intel UHD 630+ iGPU or NVIDIA GTX 9xx+ iGPU/GPUs (preferably without Optimus [PRIME])
 - UEFI-enabled device
 - Disabled secure boot
 
