@@ -177,7 +177,7 @@ full_install() {
 
 		if [[ "${HOLO_GPU_TYPE}" == "1" ]]; then
 	        	echo "Installing gamescope for AMD GPUs..."
-			GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" vulkan-radeon-steamos lib32-vulkan-radeon-steamos gamescope mesa-steamos lib32-mesa-steamos)
+			GAMESCOPE_INSTALL=(/usr/bin/pacman --noconfirm -S --needed --overwrite="*" vulkan-radeon lib32-vulkan-radeon gamescope mesa lib32-mesa)
 			break
 	    	elif [[ "${HOLO_GPU_TYPE}" == "2" ]]; then
 	        	echo "Installing gamescope for Intel GPUs..."
