@@ -8,7 +8,9 @@ SteamOS 3 (Holo) archiso configuration.
 
 This project attempts to bring the Steam Deck's Holo OS into a generic, installable format, and provide a close-to-official SteamOS experience.
 
-Click [here](https://t.me/HoloISO) to join **HoloISO** Telegram update channel
+Click [here](https://t.me/HoloISO) to join **HoloISO** Telegram update channel;
+
+Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO** discussion on Steam Deck Community forums
 
 **Common Questions**
 
