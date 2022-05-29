@@ -1,6 +1,6 @@
+![image](https://user-images.githubusercontent.com/97450182/167457908-07be1a60-7e86-4bef-b7f0-6bd19efd8b24.png)
 [![Build ISO](https://github.com/theVakhovskeIsTaken/holoiso/actions/workflows/build.yml/badge.svg)](https://github.com/theVakhovskeIsTaken/holoiso/actions/workflows/build.yml)
 
-![image](https://user-images.githubusercontent.com/97450182/167457908-07be1a60-7e86-4bef-b7f0-6bd19efd8b24.png)
 # HoloISO
 SteamOS 3 (Holo) archiso configuration.
 
@@ -8,9 +8,11 @@ SteamOS 3 (Holo) archiso configuration.
 
 This project attempts to bring the Steam Deck's Holo OS into a generic, installable format, and provide a close-to-official SteamOS experience.
 
-Click [here](https://t.me/HoloISO) to join **HoloISO** Telegram update channel;
+**HoloISO social media**
 
-Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO** discussion on Steam Deck Community forums
+- [Telgram](https://t.me/HoloISO) update channel.
+
+- Steam deck [forums](https://steamdeck.community/forums/holoiso.29/) HoloISO page.
 
 **Common Questions**
 
@@ -27,19 +29,17 @@ Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO*
 - Deck UI (-gamepadui)
 - TDP/FPS limiting
 - Global FSR
+- System updates
 - Shader Pre-Caching
-- Switch to Desktop from plasma/to plasma without user interference.
+- Switch to Desktop from plasma/to plasma without user interference
 - Valve's exclusive *Vapor* appearance for KDE Plasma
 - Steam Deck pacman mirrors
 - Cool-looking neofetch?
-- System updates
 
 **Known issues:**
-- NVIDIA GPUs are supported after following this procedure:
+- NVIDIA GPUs are supported after following this procedure.*
 
-> Only 9xx+ GPUs are supported. Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install required packages.
-
-> Older GPUs won't be supported until drivers are opensourced OR Until they support atomic KMS, accelerated Xwayland, and Vulkan DMA-BUF extensions, they simply cannot function properly with HoloISO.
+> Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install the required packages. ****Only 900 series GPUs and onwards are supported, due to drivers for older cards simply not being adeqaute at this time.***
 
 - Intel GPUs/iGPUs require a Gamescope and MESA downgrade in order to boot into Steam Deck session. 
 
@@ -49,14 +49,14 @@ Installation process:
 -
 **Prerequistes:**
 - 4GB flash drive
-- AMD RX Vega+/APU iGPU; 4xx/5xx, 5xxx/6xxx GPU
-or Intel UHD 630+ iGPU or NVIDIA GTX 9xx+ iGPU/GPUs (preferably without Optimus [PRIME])
+- *AMD RX Vega+/APU iGPU; 4xx/5xx, 5xxx/6xxx GPU*
+or *Intel UHD 630+ iGPU* or *NVIDIA GTX 9xx+ iGPU/GPUs* (preferably without Optimus [PRIME])
 - UEFI-enabled device
 - Disabled secure boot
 
 **Installation types:**
 - barebones 
-> An OS-only installation, resembles vanilla Arch Linux installation.
+> An OS-only installation, resembles a vanilla Arch Linux installation.
 - gameonly*
 > Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has the Steam Deck UI installed. 
 > ****This part is currently under a renovation.***
@@ -93,9 +93,8 @@ Building the ISO:
 -
 Trigger the build by executing:
 ```
-pacman -Sy archiso
+sudo pacman -Sy archiso
 git clone https://github.com/bhaiest/holoiso/
 sudo mkarchiso -v holoiso
 ```
 Once it ends, your ISO will be available in the `out` folder.
-
