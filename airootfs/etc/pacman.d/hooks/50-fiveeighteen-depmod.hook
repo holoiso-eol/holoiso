@@ -1,0 +1,12 @@
+# remove from airootfs!
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = linux-holoiso
+
+[Action]
+Description = Rebuilding kernel modules...
+When = PostTransaction
+Depends = linux-holoiso
+Exec = /usr/bin/sh -c 'depmod -a $(ls /lib/modules) && mkinitcpio -P'

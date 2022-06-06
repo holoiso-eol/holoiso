@@ -48,7 +48,7 @@ lftp
 libfido2
 libusb-compat
 linux-neptune-dri
-core/linux
+linux-holoiso
 linux-atm
 linux-firmware
 livecd-sounds
