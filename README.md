@@ -64,7 +64,7 @@ or Intel UHD 630+ iGPU or NVIDIA GTX 9xx+ iGPU/GPUs (preferably without Optimus 
 > Full SteamOS 3 experience, Includes proper session switching, KDE Plasma + media apps, and Chromium pre-installed.
 
 **Installation:**
-- Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) using [BalenaEtcher](https://www.balena.io/etcher/), [Rufus](https://rufus.ie) with DD mode, or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
+- Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) or [actions](https://nightly.link/theVakhovskeIsTaken/holoiso/workflows/build/3.0/holoiso) for NVIDIA GPUs using [BalenaEtcher](https://www.balena.io/etcher/), [Rufus](https://rufus.ie) with DD mode, or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
 - Boot into ISO
 - Run `holoinstall`
 - Enter drive node, starting from, for example, `sda` or `nvme0n1` when asked
