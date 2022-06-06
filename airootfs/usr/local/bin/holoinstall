@@ -97,7 +97,7 @@ base_os_install() {
 	sleep 2
 	arch-chroot ${HOLO_INSTALL_DIR} depmod -a $(ls /lib/modules)
 	arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
-	${CMD_MOUNT_HOME}
+	mount -t ext4 ${home_partition} ${HOLO_INSTALL_DIR}/home
 
 	echo "\nBase system installation done, generating fstab..."
 	genfstab -U -p /mnt >> /mnt/etc/fstab
