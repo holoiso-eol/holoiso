@@ -3,10 +3,11 @@
 Operation = Install
 Operation = Upgrade
 Type = Package
-Target = linux-holoiso
+Target = usr/lib/modules/*/vmlinuz
+Target = usr/lib/initcpio/*
 
 [Action]
 Description = Rebuilding kernel modules...
 When = PostTransaction
-Depends = linux-holoiso
-Exec = /usr/bin/sh -c 'depmod -a $(ls /lib/modules) && mkinitcpio -P'
+Exec = /usr/bin/sh -c 'depmod -a 5.18.1-arch1_testHoloISO_20220606.1500'
+NeedsTargets

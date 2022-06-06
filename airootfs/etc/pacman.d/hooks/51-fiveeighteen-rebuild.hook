@@ -1,0 +1,13 @@
+# remove from airootfs!
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = usr/lib/modules/*/vmlinuz
+Target = usr/lib/initcpio/*
+
+[Action]
+Description = Rebuilding initial cpio....
+When = PostTransaction
+Exec = /usr/bin/sh -c 'mkinitcpio -P'
+NeedsTargets
