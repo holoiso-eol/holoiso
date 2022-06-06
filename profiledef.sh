@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
-iso_name="SteamOS_Holo"
+iso_name="HoloISO_Stable"
 iso_label="HOLO_$(date +%Y%m)"
 iso_publisher="theVakhovske <https://github.com/bhaiest>"
 iso_application="SteamOS Live/Rescue CD"
-iso_version="$(date +%Y%m%d_%H%M)_Stable"
+iso_version="$(date +%Y%m%d_%H%M)"
 install_dir="arch"
 buildmodes=('iso')
 bootmodes=('uefi-x64.systemd-boot.esp' 'uefi-x64.systemd-boot.eltorito')
