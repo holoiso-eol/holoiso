@@ -83,7 +83,7 @@ base_os_install() {
 	mkfs -t vfat ${INSTALLDEVICE}1
 	fatlabel ${INSTALLDEVICE}1 HOLOEFI
 	mkfs -t btrfs -f ${root_partition}
-	mkfs -t ext4 ${INSTALLDEVICE}3
+	mkfs -t ext4 -O casefold ${INSTALLDEVICE}3
 	home_partition="${INSTALLDEVICE}3"
 	btrfs filesystem label ${root_partition} holo-root
 	e2label "${INSTALLDEVICE}3" holo-home
