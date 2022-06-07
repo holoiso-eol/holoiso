@@ -51,6 +51,7 @@ linux-neptune-dri
 linux-holoiso
 linux-atm
 linux-firmware
+linux-firmware-marwell
 livecd-sounds
 lsscsi
 lvm2
