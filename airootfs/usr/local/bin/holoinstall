@@ -100,9 +100,9 @@ base_os_install() {
 	mount -t ext4 ${home_partition} ${HOLO_INSTALL_DIR}/home
 
 	echo "\nBase system installation done, generating fstab..."
-	genfstab -U -p /mnt >> /mnt/etc/fstab
-	cp /etc/pacman.conf /mnt/etc/pacman.conf
-	cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist
+	genfstab -U -p ${HOLO_INSTALL_DIR} >> ${HOLO_INSTALL_DIR}/etc/fstab
+	cp /etc/pacman.conf ${HOLO_INSTALL_DIR}/etc/pacman.conf
+	cp /etc/pacman.d/mirrorlist ${HOLO_INSTALL_DIR}/etc/pacman.d/mirrorlist
 
 	read "?Enter hostname for this installation: " HOLOHOSTNAME
 	echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
@@ -203,8 +203,8 @@ full_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} ${GAMESCOPE_INSTALL}
 	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
 	echo "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
-	mkdir /mnt/home/${HOLOUSER}/Desktop
-	cp /etc/holoinstall/steamos-gamemode.desktop /mnt/home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
+	mkdir ${HOLO_INSTALL_DIR}/home/${HOLOUSER}/Desktop
+	cp /etc/holoinstall/steamos-gamemode.desktop ${HOLO_INSTALL_DIR}/home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
 	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
 	arch-chroot ${HOLO_INSTALL_DIR} ln -s /usr/share/applications/steam.desktop /home/${HOLOUSER}/Desktop/steam.desktop
 	arch-chroot ${HOLO_INSTALL_DIR} chown -R ${HOLOUSER}:${HOLOUSER} /home/${HOLOUSER}/Desktop
