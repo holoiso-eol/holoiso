@@ -1,7 +1,7 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=steamos-session-select
+Exec=steamos-session-select gamescope
 GenericName[en_US]=
 GenericName=
 Icon=steamdeck-gaming-return
