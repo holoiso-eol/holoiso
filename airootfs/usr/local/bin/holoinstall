@@ -37,56 +37,121 @@ fi
 base_os_install() {
 	lsblk
 	read "?Enter your desired drive node here (for example, sda or nvme0n1): " DRIVEDEVICE
-	#read "?WARNING: This drive is going to be erased fully. Press enter to continue, or CTRL+Z to terminate"
 	
 	DEVICE="/dev/${DRIVEDEVICE}"
 	
 	INSTALLDEVICE="${DEVICE}"
+
+	echo "1) Destructive install\n2) Install alongside existing OS\nType 1 or 2: "
+	read "?Your choice is: " install
+
+	case $install in
+		1)
+			destructive=true
+			umount $INSTALLDEVICE*
+			echo "\n\nWARNING: The following drive is going to be erased fully. ALL DATA ON DRIVE $DEVICE WILL BE LOST!\n"
+			lsblk $DEVICE
+			echo -n "\nErase $DEVICE and begin installation(y/N): "
+			read ANS
+			case $ANS in
+				y | Y)
+					echo "\nWiping partitions..."
+					sfdisk --delete ${DEVICE}
+					wipefs -a ${DEVICE}
+					echo "\nCreating new gpt partitions..."
+					parted ${DEVICE} mklabel gpt
+					;;
+				*)
+					echo "\nInvalid options.\nYou canceled the destructive install, please try again"
+					exit 1
+					;;
+			esac
+			;;
+		2)
+			echo "Holo OS will be installed alongside existing OS, please make sure there are more than 24 GB of free space available"
+			;;
+		*)
+			echo "Invalid options, please try again"
+			exit 1
+			;;
+	esac
+
+	numPartitions=$(grep -c ${DRIVEDEVICE}'[0-9]' /proc/partitions)
 	
 	echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
 	if [ $? -eq 0 ]; then
 		INSTALLDEVICE="${DEVICE}p"
+		numPartitions=$(grep -c ${DRIVEDEVICE}p /proc/partitions)
 	fi
 	
 	if [ ! -b $DEVICE ]; then
 		echo "$DEVICE not found! Installation Aborted!"
 		exit 1
 	fi
-	
-	echo "\n\nWARNING: The following drive is going to be erased fully. ALL DATA ON DRIVE $DEVICE WILL BE LOST!\n"
-	lsblk $DEVICE
-	echo -n "\nErase $DEVICE and begin installation(y/N): "
-	read ANS
-	
-	if [[ ! ($ANS = 'y' || $ANS = 'Y') ]]; then
-		echo "Installation Aborted!"
+
+	efiPartNum=$(expr $numPartitions + 1)
+	rootPartNum=$(expr $numPartitions + 2)
+	homePartNum=$(expr $numPartitions + 3)
+
+	echo "\nCalculating start and end of free space..."
+	diskSpace=$(awk '/'${DRIVEDEVICE}'/ {print $3; exit}' /proc/partitions)
+	# <= 32GB: typical flash drive
+	if [ $diskSpace -lt 32000000 ]; then
+		digitMB=13
+		digitGB=10
+		realDiskSpace=$(parted ${DEVICE} unit MB print free|head -n2|tail -n1|cut -c 16-20)
+	# <= 500GB: typical 512GB hard drive
+	elif [ $diskSpace -lt 500000000 ]; then
+		digitMB=14
+		digitGB=11
+		realDiskSpace=$(parted ${DEVICE} unit MB print free|head -n2|tail -n1|cut -c 20-25)
+	# anything else: typical 1024GB hard drive
+	else
+		digitMB=15
+		digitGB=12
+		realDiskSpace=$(parted ${DEVICE} unit MB print free|head -n2|tail -n1|cut -c 20-26)
+	fi
+
+	if [ $destructive ]; then
+		efiStart=2
+		rootStart=258M
+		rootEnd=25
+	else
+		efiStart=$(parted ${DEVICE} unit MB print free|tail -n2|cut -c 9-${digitMB})
+		rootStart=$(parted ${DEVICE} unit GB print free|tail -n2|cut -c 9-${digitGB})
+		rootEnd=$(expr $rootStart + 24)
+	fi
+	efiEnd=$(expr $efiStart + 256)
+
+	if [ $efiEnd -gt $realDiskSpace ]; then
+		echo "Not enough space available, please choose another disk and try again"
 		exit 1
 	fi
-	
+
 	echo "\nCreating partitions..."
-	sfdisk --delete ${DEVICE}
-	wipefs -a ${DEVICE}
-	parted ${DEVICE} mklabel gpt
-	parted ${DEVICE} mkpart primary fat32 2M 256M
-	parted ${DEVICE} set 1 boot on
-	parted ${DEVICE} set 1 esp on
+	parted ${DEVICE} mkpart primary fat32 ${efiStart}M ${efiEnd}M
+	parted ${DEVICE} set ${efiPartNum} boot on
+	parted ${DEVICE} set ${efiPartNum} esp on
 	# If the available storage is less than 64GB, don't create /home.
 	# If the boot device is mmcblk0, don't create an ext4 partition or it will break steamOS versions
 	# released after May 20.
-	if [ "$(awk '/'${DRIVEDEVICE}'/ {print $3; exit}' /proc/partitions)" -lt 64000000 ] || [[ "${DEVICE}" =~ mmcblk0 ]]; then
-		parted ${DEVICE} mkpart primary btrfs 256M 100%
+	if [ $diskSpace -lt 64000000 ] || [[ "${DEVICE}" =~ mmcblk0 ]]; then
+		parted ${DEVICE} mkpart primary btrfs ${rootStart} 100%
 	else
-		parted ${DEVICE} mkpart primary btrfs 256M 24G
-	    	parted ${DEVICE} mkpart primary ext4 24G 100%
+		parted ${DEVICE} mkpart primary btrfs ${rootStart} ${rootEnd}G
+		parted ${DEVICE} mkpart primary ext4 ${rootEnd}G 100%
+		home=true
 	fi
-	root_partition="${INSTALLDEVICE}2"
-	mkfs -t vfat ${INSTALLDEVICE}1
-	fatlabel ${INSTALLDEVICE}1 HOLOEFI
+	root_partition="${INSTALLDEVICE}${rootPartNum}"
+	mkfs -t vfat ${INSTALLDEVICE}${efiPartNum}
+	fatlabel ${INSTALLDEVICE}${efiPartNum} HOLOEFI
 	mkfs -t btrfs -f ${root_partition}
-	mkfs -t ext4 -O casefold ${INSTALLDEVICE}3
-	home_partition="${INSTALLDEVICE}3"
 	btrfs filesystem label ${root_partition} holo-root
-	e2label "${INSTALLDEVICE}3" holo-home
+	if [ $home ]; then
+		mkfs -t ext4 -O casefold ${INSTALLDEVICE}${homePartNum}
+		home_partition="${INSTALLDEVICE}${homePartNum}"
+		e2label "${INSTALLDEVICE}${homePartNum}" holo-home
+	fi
 
 	echo "\nPartitioning complete, mounting and pacstrapping..."
 	echo "${UCODE_INSTALL_MSG}"
@@ -152,7 +217,7 @@ base_os_install() {
 	echo "\nInstalling bootloader..."
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_UPDATE}
 	mkdir ${HOLO_INSTALL_DIR}/boot/efi
-	mount -t vfat ${INSTALLDEVICE}1 ${HOLO_INSTALL_DIR}/boot/efi
+	mount -t vfat ${INSTALLDEVICE}${efiPartNum} ${HOLO_INSTALL_DIR}/boot/efi
 	arch-chroot ${HOLO_INSTALL_DIR} ${CMD_PACMAN_INSTALL} core/grub efibootmgr inetutils mkinitcpio neofetch networkmanager sddm-wayland
 	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable NetworkManager systemd-timesyncd
 	arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
