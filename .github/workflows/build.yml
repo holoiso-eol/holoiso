@@ -13,15 +13,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: archlinux:latest
+      image: thevakhovske/holoiso:latest
       options: --privileged
     steps:
       - uses: actions/checkout@v2
 
-      - name: Prepare pacman keyring
+      - name: Sanity check, if we are on SteamOS environment
         run: |
-          pacman-key --init
-          pacman --noconfirm -Sy archlinux-keyring
+          cat /etc/os-release          
       
       - name: Install ArchISO
         run: |
