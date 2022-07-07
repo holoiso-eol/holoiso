@@ -4,7 +4,7 @@
 iso_name="HoloISO_Stable"
 iso_label="HOLO_$(date +%Y%m)"
 iso_publisher="theVakhovske <https://github.com/bhaiest>"
-iso_application="SteamOS Live/Rescue CD"
+iso_application="SteamOS Installer media"
 iso_version="$(date +%Y%m%d_%H%M)"
 install_dir="arch"
 buildmodes=('iso')
