@@ -6,7 +6,8 @@ SteamOS 3 (Holo) archiso configuration.
 
 ***Yes, Gabe. SteamOS functions well on a toaster.***
 
-This project attempts to bring the Steam Deck's Holo OS into a generic, installable format, and provide a close-to-official SteamOS experience.
+This project attempts to bring the Steam Deck's SteamOS Holo into a generic, installable format, and provide a close-to-official SteamOS experience.
+Main point of this project focuses in re-implementing proprietary (as in runs-only-on-deck) components that Steam client, OS itself, gamescope and user-created applications for Deck rely on.
 
 Click [here](https://t.me/HoloISO) to join **HoloISO** Telegram update channel;
 
@@ -25,7 +26,7 @@ Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO*
 - SteamOS OOBE (Steam Deck UI First Boot Experience)
 - Deck UI (separate session)
 - Deck UI (-gamepadui)
-- TDP/FPS limiting
+- TDP/FPS limiting*
 - Global FSR
 - Shader Pre-Caching
 - Switch to Desktop from plasma/to plasma without user interference.
@@ -34,14 +35,16 @@ Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO*
 - Cool-looking neofetch?
 - System updates
 
+*TDP and GPU clock limiting doesn't function on APU devices, and is partly broken on dGPUs due to Deck-specific powerlimit node `/sys/class/hwmon/hwmon*/power*_cap`.
+
 **Known issues:**
 - NVIDIA GPUs are supported after following this procedure:
 
-> Only 9xx+ GPUs are supported. Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install required packages.
+> Only 10xx+ GPUs are FULLY supported. Although 9xx support exists in drivers, gamescope doesn't launch on it. Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install required packages.
 
 > Older GPUs won't be supported until drivers are opensourced OR Until they support atomic KMS, accelerated Xwayland, and Vulkan DMA-BUF extensions, they simply cannot function properly with HoloISO.
 
-- Intel GPUs/iGPUs require a Gamescope and MESA downgrade in order to boot into Steam Deck session. 
+- Intel GPUs/iGPUs require a Gamescope downgrade in order to boot into Steam Deck session. 
 
 > Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install required packages.
 
