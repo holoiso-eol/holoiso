@@ -120,3 +120,19 @@ wvdial
 xfsprogs
 xl2tpd
 zsh
+
+# GUI
+xfce4
+xorg-server
+lightdm
+lightdm-gtk-greeter
+xdg-user-dirs
+bash-completion
+networkmanager
+network-manager-applet
+mousepad
+gvfs
+neofetch
+xfce4-pulseaudio-plugin
+pulseaudio-alsa
+noto-fonts

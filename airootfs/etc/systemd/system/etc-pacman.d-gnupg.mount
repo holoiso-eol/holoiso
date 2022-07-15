@@ -1,3 +1,6 @@
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 [Unit]
 Description=Temporary /etc/pacman.d/gnupg directory
 

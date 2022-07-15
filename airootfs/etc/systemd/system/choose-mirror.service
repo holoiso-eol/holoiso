@@ -1,0 +1,13 @@
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[Unit]
+Description=Choose mirror from the kernel command line
+ConditionKernelCommandLine=mirror
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/choose-mirror
+
+[Install]
+WantedBy=multi-user.target
