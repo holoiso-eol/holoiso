@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
-iso_name="HoloISO_Experimental"
+iso_name="HoloISO_Beta"
 iso_label="HOLO_$(date +%Y%m)"
-iso_publisher="theVakhovske <https://github.com/bhaiest>"
+iso_publisher="theVakhovske <https://github.com/theVakhovskeIsTaken>"
 iso_application="SteamOS Installer media"
 iso_version="$(date +%Y%m%d_%H%M)"
 install_dir="arch"
