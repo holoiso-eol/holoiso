@@ -102,3 +102,12 @@ sudo mkarchiso -v holoiso
 ```
 Once it ends, your ISO will be available in the `out` folder.
 
+Building the ISO using Docker:
+```
+# /path/to/some/dir can be any directory
+docker run -it -v /path/to/some/dir:/holo --cap-add ALL --privileged archlinux
+pacman -Sy archiso git
+git clone https://github.com/bhaiest/holoiso/
+mkarchiso -o /holo -v holoiso
+```
+After the build completes your ISO will be available in the `/path/to/some/dir` 
