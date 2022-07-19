@@ -35,7 +35,7 @@ gptfdisk
 grml-zsh-config
 grub
 hdparm
-holostaging/holoiso-install-script
+holostaging/holoiso-install-script-gui
 intel-ucode
 ipw2100-fw
 ipw2200-fw
@@ -48,7 +48,7 @@ less
 lftp
 libfido2
 libusb-compat
-linux-neptune-dri
+linux-neptune
 linux-holoiso
 linux-atm
 linux-firmware
@@ -120,3 +120,28 @@ wvdial
 xfsprogs
 xl2tpd
 zsh
+
+# GUI
+plasma
+plasma-nm
+plasma-meta
+steamdeck-kde-presets
+xorg-server
+lightdm
+lightdm-gtk-greeter
+xdg-user-dirs
+bash-completion
+networkmanager
+network-manager-applet
+mousepad
+gvfs
+neofetch
+xfce4-pulseaudio-plugin
+pulseaudio-alsa
+noto-fonts
+onboard
+zenity
+dialog
+dolphin
+spectacle
+konsole

@@ -1,0 +1,19 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=sudo rm /etc/skel/Desktop/Return.desktop
+GenericName[en_US]=
+GenericName=
+Icon=system-reboot
+MimeType=
+Name[en_US]=kys
+Name=kys
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

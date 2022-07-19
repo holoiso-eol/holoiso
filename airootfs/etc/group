@@ -1,0 +1,16 @@
+root:x:0:root
+sys:x:3:bin,liveuser
+network:x:90:liveuser
+power:x:98:liveuser
+adm:x:999:liveuser
+wheel:x:998:liveuser
+uucp:x:987:liveuser
+optical:x:990:liveuser
+rfkill:x:983:liveuser
+video:x:986:liveuser
+storage:x:988:liveuser
+audio:x:995:liveuser
+users:x:985:liveuser
+nopasswdlogin:x:966:liveuser
+autologin:x:967:liveuser
+liveuser:x:1000:
