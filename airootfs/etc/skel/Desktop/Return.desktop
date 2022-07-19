@@ -1,0 +1,19 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=sudo reboot
+GenericName[en_US]=
+GenericName=
+Icon=system-reboot
+MimeType=
+Name[en_US]=Reboot device
+Name=Reboot device
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=
