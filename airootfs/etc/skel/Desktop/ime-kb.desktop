@@ -1,0 +1,19 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=onboard
+GenericName[en_US]=
+GenericName=
+Icon=input-keyboard-symbolic
+MimeType=
+Name[en_US]=Show on-screen keyboard
+Name=Show on-screen keyboard
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

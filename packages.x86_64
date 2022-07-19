@@ -48,7 +48,7 @@ less
 lftp
 libfido2
 libusb-compat
-linux-neptune-dri
+linux-neptune
 linux-holoiso
 linux-atm
 linux-firmware
@@ -122,7 +122,10 @@ xl2tpd
 zsh
 
 # GUI
-xfce4
+plasma
+plasma-nm
+plasma-meta
+steamdeck-kde-presets
 xorg-server
 lightdm
 lightdm-gtk-greeter
@@ -136,5 +139,6 @@ neofetch
 xfce4-pulseaudio-plugin
 pulseaudio-alsa
 noto-fonts
+onboard
 zenity
 dialog
