@@ -26,7 +26,7 @@ Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO*
 - SteamOS OOBE (Steam Deck UI First Boot Experience)
 - Deck UI (separate session)
 - Deck UI (-gamepadui)
-- TDP/FPS limiting*
+- ~~TDP/FPS limiting~~ (*0)
 - Global FSR
 - Shader Pre-Caching
 - Switch to Desktop from plasma/to plasma without user interference.
@@ -35,12 +35,14 @@ Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO*
 - Cool-looking neofetch?
 - System updates
 
-*TDP and GPU clock limiting doesn't function on APU devices, and is partly broken on dGPUs due to Deck-specific powerlimit node `/sys/class/hwmon/hwmon*/power*_cap`.
+(*0) Disabled for ALL systems due to VERY LOW hardcoded TDP/Clock values, especially for dGPUs.
 
 **Known issues:**
 - NVIDIA GPUs are supported after following this procedure:
 
-> Only 10xx+ GPUs are FULLY supported. Although 9xx support exists in drivers, gamescope doesn't launch on it. Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install required packages.
+> Only 10xx+ GPUs are FULLY supported(*1). Although 9xx support exists in drivers, gamescope doesn't launch on it. Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install required packages.
+
+(*1) The NVIDIA support is still pretty wonky. GamepadUI will lag, meanwhile games will run fine, session startup is very random too, usually boots in 5/10 of attempts
 
 > Older GPUs won't be supported until drivers are opensourced OR Until they support atomic KMS, accelerated Xwayland, and Vulkan DMA-BUF extensions, they simply cannot function properly with HoloISO.
 
@@ -84,6 +86,9 @@ Screenshots:
 ![Screenshot_20220508_134038](https://user-images.githubusercontent.com/97450182/167292734-90036b5f-2571-438e-8951-8d731cd4ae93.png)
 ![Screenshot_20220508_134051](https://user-images.githubusercontent.com/97450182/167292738-a70d266f-814d-4352-8d38-b920ae3f3381.png)
 
+Credits:
+-
+(Too much people xD, to be filled later!!!)
 
 Notes:
 -
