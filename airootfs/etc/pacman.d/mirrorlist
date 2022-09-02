@@ -1,6 +1,2 @@
 # Valve SteamOS
 Server = https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch
-
-# HoloISO
-Server = http://dlcdn2.thevakhovske.pw/$repo/os/$arch
-Server = http://dl.thevakhovske.pw/$repo/os/$arch
