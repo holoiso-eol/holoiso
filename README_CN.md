@@ -5,56 +5,56 @@
 # ENGLISH Version
 Click [here](https://github.com/theVakhovskeIsTaken/holoiso) to access the English version.
 
-
 # HoloISO 
-SteamOS 3 (Holo) 是一个使用了ArchLinux 构建的linux系统.
 
-***是的, V社宣称,甚至在面包机上SteamOS也能够运行.***
+SteamOS 3 (Holo) 基于 ArchLinux 构建.
 
+***是的,V社宣称甚至在面包机上也能够运行SteamOS.***
 
-HoloISO项目，试图将Steam Desk的SteamOS Holo改为通用的、可安装的格式。重点在于重新修改Steam客户端、OS本身、Gamescope和用户创建的Deck应用所依赖的专有组件，提供提供接近官方的SteamOS体验(就像运行在Steam Desk上).
+HoloISO 项目,试图将 Steam Desk 的 SteamOS Holo 改为通用、可安装的格式,并提供接近官方的 SteamOS 体验.本项目的重点在于实现 Steam 客户端、重装系统本身、 Gamescope组件,以及用户为Deck 应用创建的应用程序所依赖的运行库.(就像运行在Steam Desk上).
 
+点击 [这里](https://t.me/HoloISO) 来加入 **HoloISO** 的官方 **Telegram** 更新频道 ;
 
-点击 [这里](https://t.me/HoloISO) 加入**HoloISO**官方 Telegram更新频道;
-
-点击 [这里](https://steamdeck.community/forums/holoiso.29/) 访问Steam Deck官方社区论坛上的**HoloISO**讨论
+点击 [这里](https://steamdeck.community/forums/holoiso.29/) 来访问 **Steam Deck** 官方社区论坛上对 **HoloISO** 的讨论.
 
 **常见问题:**
 
-- 这是V社官方的SteamOS吗?
-> 不是, 但是已经和官方99%部分是一样的. 原代码和包直接来自Valve，没有经过任何的编辑，ISO是在官方Steam Deck恢复映像上获取的的，从QEMU实例中运行。
-- 我下载的ISO无法启动或者说无法引导?
-> 目前，只有在使用这些软件制作 [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/), [Rufus](https://rufus.ie) 块大小为4MB的DD模式的磁盘才能正确引导.
+- 本项目是V社官方的 SteamOS 吗?
+> 不是,但它 99% 的部分已经和官方是一样的.它的原代码和软件包没有经过任何的编辑,都直接来自Valve,并且是从官方 Steam Deck 获取的ISO恢复映像,在 QEMU 中运行的中提取的.
+- 我下载的 ISO 文件无法启动或者说无法引导,怎么办?
+> 目前,只有在通过这些软件制作才能正确引导：
+> 块大小为 4MB 的 DD 模式： [alenaEtcher](https://www.balena.io/etcher/)、[RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter)、[Fedora Media Writer](https://getfedora.org/en/workstation/download/),或 DD 模式的：[Rufus](https://rufus.ie)
 
 
-**工作目标:**
-- 启动
-- SteamOS OOBE (Steam Deck UI 首次启动引导的欢迎界面)
+**项目计划**
+- 成功启动
+- SteamOS OOBE（Steam Deck UI 首次启动时的欢迎界面）
 - Deck UI (-桌面模式)
 - Deck UI (-游戏模式)
 - ~~TDP 控制/FPS 限制~~ (*0)
 - 全局 FSR
 - 材质预缓存
 - 切换桌面模式到Plasma/到Plasma的过程无须用户干预.
-- Valve's 独家的 *Vapor* 外观，基于 KDE Plasma
+- Valve's 独家的 *Vapor* 外观,基于 KDE Plasma
 - Steam Deck pacman 源镜像
 - 看起来很酷的neofetch?
 - 系统自动更新
 
-(*0) 由于Steam Deck默认的TDP功耗和GPU频率很低，特别是dGPUs，无法匹配大部分通用配置，所以被禁用.
+(*0) 由于 Steam Deck 默认的 TDP 功耗和 GPU 频率都很低,特别是 dGPUs ,无法匹配大部分通用配置,所以该功能禁用. 
 
 **已知问题:**
-- NVIDIA GPUs 支持须知:
 
-> 只有 10xx+ GPUs 才能完全支持(*1). 尽管驱动程序中存在 9xx 的支持, 但gamescope并未在此基础上发布. 需要在安装 HoloISO 选择你的 GPU 类型. 如果遇到任何问题，请重新启动到恢复模式，键入recoveryinit，使用nmtui连接到网络并安装所需的软件包.
+- NVIDIA 显卡使用须知：
 
-(*1) 对NVIDIA的支持仍然很不稳定。GamepadUI会滞后，但是游戏会正常运行，启动也非常随机，通常在5~10次尝试中启动.
+> 仅完美支持10系以上显卡（*1）. 虽然9系列显卡存在驱动,但 gamescope 未提供支持. 安装 HoloISO 时需要选择你的显卡类型. 如果遇到任何问题,请重新启动到恢复模式,并键入 `recoveryinit` ,使用 `nmtui` 连接到网络并安装所需的软件包. 
 
-> 在 NVIDIA GPUs 支持KMS、Xwayland和Vulkan DMA-BUF扩展之前，它们根本无法与HoloISO正常工作。
+(*1) 对 NVIDIA 显卡的支持仍然很不稳定. GamepadUI 会滞后,但是游戏会正常运行,启动不一定成功,通常在 5~10 次尝试中启动成功. 
+
+> 在 NVIDIA GPUs 支持KMS、Xwayland和Vulkan DMA-BUF扩展之前,它们根本无法与HoloISO正常工作. 
 
 - Intel GPUs/iGPUs 需要Gamescope降级才能引导进入SteamOS. 
 
-> 需要在安装 HoloISO 选择你的 GPU 类型. 如果遇到任何问题，请重新启动到恢复模式，键入recoveryinit，使用nmtui连接到网络并安装所需的软件包.
+> 需要在安装 HoloISO 选择你的 GPU 类型. 如果遇到任何问题,请重新启动到恢复模式,键入recoveryinit,使用nmtui连接到网络并安装所需的软件包.
 
 安装过程:
 -
@@ -66,25 +66,25 @@ HoloISO项目，试图将Steam Desk的SteamOS Holo改为通用的、可安装的
 - 支持 UEFI 启动
 - 禁用安全启动
 
-(*3)optimus是 NVIDIA的 双显卡的智能切换技术，这个技术的出现解决了以前的双显卡笔记本需要重启或者需要关闭所有占用GPU的程序才能切换的问题。optimus是针对windows系统设计的，没有考虑在Linux下的兼容性，因此optimus设备想要在Linux下使用独显极其麻烦，这个在linux下有兼容性问题，所以最好不要是这种设备.
+(*3)optimus是 NVIDIA的 双显卡的智能切换技术,这个技术的出现解决了以前的双显卡笔记本需要重启或者需要关闭所有占用GPU的程序才能切换的问题. optimus是针对windows系统设计的,没有考虑在Linux下的兼容性,因此optimus设备想要在Linux下使用独显极其麻烦,这个在linux下有兼容性问题,所以最好不要是这种设备.
 
 **安装类型:**
 - 最低安装
 > 只有桌面模式, 类似于普通的Arch Linux安装.
 - 仅游戏模式*
-> 仅Steam Deck UI(仅支持AMD GPU;没有桌面模式) 如上所述，没有安装任何DE，只有游戏模式的Steam Deck UI
-> ****这个安装类型还在修改中，目前并没有提供.***
+> 仅Steam Deck UI(仅支持AMD GPU;没有桌面模式) 如上所述,没有安装任何DE,只有游戏模式的Steam Deck UI
+> ****这个安装类型还在修改中,目前并没有提供.***
 - 完整安装
-> 完整的SteamOS 3体验，包括会话切换，桌面模式+应用程序，和预安装的程序。
+> 完整的SteamOS 3体验,包括会话切换,桌面模式+应用程序,和预安装的程序. 
 
 **安装指南:**
-- 下载ISO并且用这些软件制作 [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/), [Rufus](https://rufus.ie) 块大小为4MB的DD模式的磁盘，如果你是linux `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync` 
+- 下载ISO并且用这些软件制作 [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/), [Rufus](https://rufus.ie) 块大小为4MB的DD模式的磁盘,如果你是linux `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync` 
 - 从 ISO 引导进入
 - 运行 `holoinstall`
-- 当出现选项时，选择安装的磁盘, 列如, `sda` 或者 `nvme0n1` 进行安装
-- 拿上你爱喝的饮料，等待安装完毕 :3
+- 当出现选项时,选择安装的磁盘, 列如, `sda` 或者 `nvme0n1` 进行安装
+- 拿上你爱喝的饮料,等待安装完毕 :3
 
-在启动时，你会看到Steam Deck的欢迎界面，从那里你将连接到你的网络，并登录到你的Steam帐户，然后你可以退出到KDE Plasma在电源菜单选择*切换到桌面*，[像这样](https://www.youtube.com/watch?v=smfwna2iHho)。
+在启动时,你会看到Steam Deck的欢迎界面,从那里你将连接到你的网络,并登录到你的Steam帐户,然后你可以退出到KDE Plasma在电源菜单选择*切换到桌面*,[像这样](https://www.youtube.com/watch?v=smfwna2iHho). 
 
 截图:
 -
@@ -101,7 +101,7 @@ HoloISO项目，试图将Steam Desk的SteamOS Holo改为通用的、可安装的
 
 该项目配置包括Valve的pacman.conf存储库 'holoinstall' 脚本和 'holoinstall' 安装后二进制文件
 
-该项目配置构建基于*releng-based ISO*，这是Arch Linux的默认重分发版本。
+该项目配置构建基于*releng-based ISO*,这是Arch Linux的默认重分发版本. 
 
 创建一个最新的ISO:
 -
@@ -111,5 +111,5 @@ pacman -Sy archiso
 git clone https://github.com/bhaiest/holoiso/
 sudo mkarchiso -v holoiso
 ```
-下载结束后,你的ISO文件将在 'out' 文件夹中可用。
+下载结束后,你的ISO文件将在 'out' 文件夹中可用. 
 
