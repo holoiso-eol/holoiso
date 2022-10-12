@@ -26,7 +26,7 @@ HoloISO 项目,试图将 Steam Desk 的 SteamOS Holo 改为通用、可安装的
 > 块大小为 4MB 的 DD 模式： [alenaEtcher](https://www.balena.io/etcher/)、[RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter)、[Fedora Media Writer](https://getfedora.org/en/workstation/download/),或 DD 模式的：[Rufus](https://rufus.ie)
 
 
-**项目计划**
+**项目计划:**
 - 成功启动
 - SteamOS OOBE（Steam Deck UI 首次启动时的欢迎界面）
 - Deck UI (-桌面模式)
@@ -46,48 +46,46 @@ HoloISO 项目,试图将 Steam Desk 的 SteamOS Holo 改为通用、可安装的
 
 - NVIDIA 显卡使用须知：
 
-> 仅完美支持10系以上显卡（*1）. 虽然9系列显卡存在驱动,但 gamescope 未提供支持. 安装 HoloISO 时需要选择你的显卡类型. 如果遇到任何问题,请重新启动到恢复模式,并键入 `recoveryinit` ,使用 `nmtui` 连接到网络并安装所需的软件包. 
+> 仅完美支持10系以上显卡. 虽然9系列显卡存在驱动,但 gamescope 未提供支持. 安装 HoloISO 时需要选择你的显卡类型. 如果遇到任何问题,请重新启动到恢复模式,并键入 `recoveryinit` ,使用 `nmtui` 连接到网络并安装所需的软件包. （*1）
 
 (*1) 对 NVIDIA 显卡的支持仍然很不稳定. GamepadUI 会滞后,但是游戏会正常运行,启动不一定成功,通常在 5~10 次尝试中启动成功. 
 
-> 在 NVIDIA GPUs 支持KMS、Xwayland和Vulkan DMA-BUF扩展之前,它们根本无法与HoloISO正常工作. 
+> 在英伟达彻底开源驱动程序之前,HoloISO 无法支持较旧的 NVIDIA 显卡.除非这些卡的新版驱动支持 KMS 、 Xwayland 和 Vulkan DMA-BUF 扩展.
 
-- Intel GPUs/iGPUs 需要Gamescope降级才能引导进入SteamOS. 
+- Intel 显卡与核心显卡需要降级 Gamescope 才能引导进入 SteamOS .
 
-> 需要在安装 HoloISO 选择你的 GPU 类型. 如果遇到任何问题,请重新启动到恢复模式,键入recoveryinit,使用nmtui连接到网络并安装所需的软件包.
+> 需要在安装 HoloISO 选择你的显卡类型.如果遇到任何问题,请重启到恢复模式,输入`recoveryinit`,使用`nmtui`来连接到网络并安装所需的软件包.
 
-安装过程:
--
+# 安装步骤:
 **最低需求:**
-- 4GB 安装U盘
-- AMD RX Vega+/APU 集成显卡; 4xx/5xx, 5xxx/6xxx 独立显卡
-  或者 英特尔 UHD 630+ 集成显卡 
-  或者 英伟达 GTX 9xx+ 集成显卡/独立显卡(最好不要使用optimus技术[PRIME](*3))
+- 4GB 存储介质
+- AMD RX Vega+/APU 集成显卡；4xx/5xx,5xxx/6xxx 独立显卡
+或 英特尔 UHD 630+ 集成显卡
+或 英伟达 GTX 9xx+ 集成显卡/独立显卡（最好不要使用 Optimus 技术\[PRIME\]（\*3））
 - 支持 UEFI 启动
-- 禁用安全启动
+- 禁用安全启动(secure boot)
 
-(*3)optimus是 NVIDIA的 双显卡的智能切换技术,这个技术的出现解决了以前的双显卡笔记本需要重启或者需要关闭所有占用GPU的程序才能切换的问题. optimus是针对windows系统设计的,没有考虑在Linux下的兼容性,因此optimus设备想要在Linux下使用独显极其麻烦,这个在linux下有兼容性问题,所以最好不要是这种设备.
+（*3）Optimus 技术是 NVIDIA 的双显卡的智能切换技术,这个技术的出现解决了以前的双显卡笔记本需要重启或者需要关闭所有占用GPU的程序才能切换的问题.Optimus 针对 windows 系统设计,并没有考虑在 Linux 下的兼容性问题,因此 Optimus 设备想要在 Linux 下使用独显极其麻烦.该技术这个在 Linux 下存在兼容性问题,所以最好不要是这种技术的设备.
 
-**安装类型:**
-- 最低安装
-> 只有桌面模式, 类似于普通的Arch Linux安装.
+**安装方式:**
+- 最小化安装
+> 只安装操作系统,类似于安装普通的 Arch Linux .
 - 仅游戏模式*
-> 仅Steam Deck UI(仅支持AMD GPU;没有桌面模式) 如上所述,没有安装任何DE,只有游戏模式的Steam Deck UI
-> ****这个安装类型还在修改中,目前并没有提供.***
+> 仅安装 Steam Deck UI （仅支持AMD 显卡、没有桌面）.如上所述,不安装任何 DE ,只有游戏模式的 Steam Deck UI .
+> ****本安装方式目前还在修改中,暂不提供.***
 - 完整安装
-> 完整的SteamOS 3体验,包括会话切换,桌面模式+应用程序,和预安装的程序. 
+> 完整的 SteamOS 3 体验,包含会话切换、 KDE 桌面 + 媒体程序和预安装的 Chromium 浏览器.
 
-**安装指南:**
-- 下载ISO并且用这些软件制作 [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/), [Rufus](https://rufus.ie) 块大小为4MB的DD模式的磁盘,如果你是linux `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync` 
-- 从 ISO 引导进入
+**安装步骤:**
+- 从 release 或者兼容 NVIDIA 显卡的 actions 下载,并使用 DD 模式的 [BalenaEtcher](https://www.balena.io/etcher) 或 [Rufus](https://rufus.ie) 或使用命令 `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync` 刷入ISO镜像.
+- 引导到 ISO 镜像
 - 运行 `holoinstall`
-- 当出现选项时,选择安装的磁盘, 列如, `sda` 或者 `nvme0n1` 进行安装
-- 拿上你爱喝的饮料,等待安装完毕 :3
+- 当弹出选项时,现在对应的硬盘,例如 `sda` 或 `nvme0n1`
+- 喝点饮料,等他安装完毕 :3
 
-在启动时,你会看到Steam Deck的欢迎界面,从那里你将连接到你的网络,并登录到你的Steam帐户,然后你可以退出到KDE Plasma在电源菜单选择*切换到桌面*,[像这样](https://www.youtube.com/watch?v=smfwna2iHho). 
+在启动时,你会看到 Steam Deck 的初始设置界面.在那里你将设置你的网络,并登录你的Steam帐户,然后你可以退出到KDE Plasma,在电源菜单选择*切换到桌面*,[像这样](https://www.youtube.com/watch?v=smfwna2iHho). 
 
-截图:
--
+# 截屏:
 ![Screenshot_20220508_133916](https://user-images.githubusercontent.com/97450182/167292656-1679e007-4701-4a3c-89ee-2104b5eb12cd.png)
 ![Screenshot_20220508_133737](https://user-images.githubusercontent.com/97450182/167292672-8bc9032d-4a21-4528-ab7e-b9dbc25a0664.png)
 ![Screenshot_20220508_133746](https://user-images.githubusercontent.com/97450182/167292722-a68806c1-5768-4790-a8e7-108d7c72bb08.png)
@@ -96,20 +94,18 @@ HoloISO 项目,试图将 Steam Desk 的 SteamOS Holo 改为通用、可安装的
 ![Screenshot_20220508_134051](https://user-images.githubusercontent.com/97450182/167292738-a70d266f-814d-4352-8d38-b920ae3f3381.png)
 
 
-备注:
--
+# 备注:
 
-该项目配置包括Valve的pacman.conf存储库 'holoinstall' 脚本和 'holoinstall' 安装后二进制文件
+本项目配置包含 Valve 的 pacman.conf 存储库、 `holoinstall` 脚本和 `holoinstall` 安装后的二进制文件.
 
-该项目配置构建基于*releng-based ISO*,这是Arch Linux的默认重分发版本. 
+该项目配置构建基于releng-based ISO,这是一个 Arch Linux 的再发行版.
 
-创建一个最新的ISO:
--
+# 如何构建ISO:
 通过执行以下命令进行构建:
 ```
 pacman -Sy archiso
 git clone https://github.com/bhaiest/holoiso/
 sudo mkarchiso -v holoiso
 ```
-下载结束后,你的ISO文件将在 'out' 文件夹中可用. 
+等结束后,你的ISO文件将在 'out' 文件夹中可用. 
 
