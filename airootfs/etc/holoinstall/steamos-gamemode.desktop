@@ -7,6 +7,7 @@ GenericName=
 Icon=steamdeck-gaming-return
 MimeType=
 Name[en_US]=Return to Gaming mode
+Name[zh_CN]=返回游戏模式
 Name=Return to Gaming mode
 Path=/usr/bin/
 StartupNotify=true
