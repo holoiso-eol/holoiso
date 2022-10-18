@@ -146,3 +146,5 @@ dolphin
 spectacle
 konsole
 open-vm-tools
+virtualbox-guest-utils
+qemu-guest-agent
