@@ -45,7 +45,7 @@ lftp
 libfido2
 libusb-compat
 linux-neptune
-core/linux
+core-main/linux
 linux-atm
 linux-firmware
 linux-firmware-marvell
