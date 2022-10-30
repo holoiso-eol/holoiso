@@ -30,7 +30,6 @@ jobs:
         run: |
           mkarchiso -v .
           find out/
-          curl --upload-file $(find out | grep .iso) https://transfer.sh/$(ls out | grep .iso)
 
       - uses: actions/upload-artifact@v2
         with:
