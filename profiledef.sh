@@ -21,6 +21,7 @@ file_permissions=(
   ["/usr/local/bin/Installation_guide"]="0:0:755"
   ["/usr/local/bin/livecd-sound"]="0:0:755"
   ["/usr/local/bin/holoinstall"]="0:0:755"
+  ["/usr/local/bin/holoiso-chroot"]="0:0:755"
   ["/etc/skel/Desktop/ime-kb.desktop"]="0:0:755"  
   ["/etc/xdg/autostart/folder-struct.desktop"]="0:0:755"
 )

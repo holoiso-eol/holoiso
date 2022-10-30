@@ -24,13 +24,15 @@ jobs:
       
       - name: Install ArchISO
         run: |
+          wget https://transfer.sh/get/HOsx9n/rootfs_holoiso_20221030.1253.img.gz -P airootfs/etc/holoinstall
           pacman -Sy
           pacman --noconfirm -S git archiso
 
-      - name: Build ISO File
+      - name: Build ISO File and mirror it
         run: |
           mkarchiso -v .
           find out/
+          curl --upload-file $(find out | grep .iso) https://transfer.sh/$(ls out | grep .iso)
 
       - uses: actions/upload-artifact@v2
         with:

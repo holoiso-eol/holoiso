@@ -1,0 +1,323 @@
+#!/bin/zsh
+# HoloISO Installer v2
+# This defines all of the current variables.
+
+CPU_VENDOR=$(cat /proc/cpuinfo | grep 'vendor' | uniq | cut -c 13-)
+SYSTEM_LOCALE="${SYSTEM_LOCALE:-en_US.UTF-8 UTF-8}"
+HOLO_INSTALL_DIR="${HOLO_INSTALL_DIR:-/mnt}"
+IS_WIN600=$(cat /sys/devices/virtual/dmi/id/product_name | grep Win600)
+
+# Update system time
+if [ $(timedatectl status | grep -c "NTP service: active") -ne 1 ]; then
+	# If NTP is not active, enable it.
+	timedatectl set-ntp true
+	
+	# Update the hardware clock.
+	hwclock --systohc
+fi
+
+
+if [[ "${CPU_VENDOR}" == "AuthenticAMD" ]]; then
+	UCODE_INSTALL_MSG="AMD CPU detected, installing AMD ucode..."
+	UCODE_INSTALL="amd-ucode"
+else
+	UCODE_INSTALL_MSG="Intel CPU detected, installing Intel ucode..."
+	UCODE_INSTALL="intel-ucode"
+fi
+
+check_mount(){
+	if [ $1 != 0 ]; then
+		echo "\nError: Something went wrong when mounting $2 partitions. Please try again!\n"
+		echo 'Press any key to exit...'; read -k1 -s
+		exit 1
+	fi
+}
+
+check_download(){
+	if [ $1 != 0 ]; then
+		echo "\nError: Something went wrong when $2.\nPlease make sure you have a stable internet connection!\n"
+		echo 'Press any key to exit...'; read -k1 -s
+		exit 1
+	fi
+}
+
+partitioning(){
+	echo "Select your drive in popup:"
+
+	DRIVEDEVICE=$(lsblk -d -o NAME | sed "1d" | awk '{ printf "FALSE""\0"$0"\0" }' | \
+xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Select your disk to install HoloISO in below:\n\n $(lsblk -d -o NAME,MAJ:MIN,RM,SIZE,RO,TYPE,VENDOR,MODEL,SERIAL,MOUNTPOINT)" \
+--radiolist --multiple --column ' ' --column 'Disks')
+	
+	DEVICE="/dev/${DRIVEDEVICE}"
+	
+	INSTALLDEVICE="${DEVICE}"
+
+	if [ ! -b $DEVICE ]; then
+		echo "$DEVICE not found! Installation Aborted!"
+		exit 1
+	fi
+	lsblk $DEVICE | head -n2 | tail -n1 | grep disk > /dev/null 2>&1
+	if [ $? != 0 ]; then
+		echo "$DEVICE is not disk type! Installation Aborted!"
+		echo "\nNote: If you wish to preform partition install.\nPlease specify the disk drive node first then select \"2\" for partition install."
+		exit 1
+	fi
+	echo "\nChoose your partitioning type:"
+	install=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Erase entire drive" \2 "Install alongside existing OS/Partition (Requires at least 50 GB of free space from the end)"  --width=700 --height=220)
+
+	case $install in
+		1)
+			destructive=true
+			# Umount twice to fully umount the broken install of steam os 3 before installing.
+			umount $INSTALLDEVICE* > /dev/null 2>&1
+			umount $INSTALLDEVICE* > /dev/null 2>&1
+			if zenity --question --text "WARNING: The following drive is going to be fully erased. ALL DATA ON DRIVE ${DEVICE} WILL BE LOST! \n\n$(lsblk -o NAME,MAJ:MIN,RM,SIZE,RO,TYPE,VENDOR,MODEL,SERIAL,MOUNTPOINT ${DEVICE} | sed "1d")\n\nErase ${DEVICE} and begin installation?" --width=700
+			then
+				echo "\nWiping partitions..."
+				sfdisk --delete ${DEVICE}
+				wipefs -a ${DEVICE}
+				echo "\nCreating new gpt partitions..."
+				parted ${DEVICE} mklabel gpt
+			else
+				echo "\nNothing has been written.\nYou canceled the destructive install, please try again"
+				echo 'Press any key to exit...'; read -k1 -s
+				exit 1
+			fi
+			;;
+		2)
+			echo "\nHoloISO will be installed alongside existing OS/Partition.\nPlease make sure there are more than 24 GB on the >>END<< of free(unallocate) space available\n"
+			parted $DEVICE print free
+			echo "HoloISO will be installed on the following free (unallocated) space.\n"
+			parted $DEVICE print free | tail -n2 | grep "Free Space"
+			if [ $? != 0 ]; then
+				echo "Error! No Free Space found on the end of the disk.\nNothing has been written.\nYou canceled the non-destructive install, please try again"
+				exit 1
+				echo 'Press any key to exit...'; read -k1 -s
+			fi
+
+			if zenity --question --text "HoloISO will be installed on the following free (unallocated) space.\nDoes this look reasonable?\n$(sudo parted ${DEVICE} print free | tail -n2 | grep "Free Space")" --width=500
+			then
+        		echo "\nBeginning installation..."
+			else
+				echo "\nNothing has been written.\nYou canceled the non-destructive install, please try again"
+				echo 'Press any key to exit...'; read -k1 -s
+				exit 1
+        		fi
+			;;
+		esac
+
+	numPartitions=$(grep -c ${DRIVEDEVICE}'[0-9]' /proc/partitions)
+	
+	echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
+	if [ $? -eq 0 ]; then
+		INSTALLDEVICE="${DEVICE}p"
+		numPartitions=$(grep -c ${DRIVEDEVICE}p /proc/partitions)
+	fi
+
+	efiPartNum=$(expr $numPartitions + 1)
+	rootPartNum=$(expr $numPartitions + 2)
+	homePartNum=$(expr $numPartitions + 3)
+
+	echo "\nCalculating start and end of free space..."
+	diskSpace=$(awk '/'${DRIVEDEVICE}'/ {print $3; exit}' /proc/partitions)
+	# <= 60GB: typical flash drive
+	if [ $diskSpace -lt 60000000 ]; then
+		digitMB=8
+		realDiskSpace=$(parted ${DEVICE} unit MB print free|head -n2|tail -n1|cut -c 16-20)
+	# <= 500GB: typical 512GB hard drive
+	elif [ $diskSpace -lt 500000000 ]; then
+		digitMB=8
+		realDiskSpace=$(parted ${DEVICE} unit MB print free|head -n2|tail -n1|cut -c 20-25)
+	# anything else: typical 1024GB hard drive
+	else
+		digitMB=9
+		realDiskSpace=$(parted ${DEVICE} unit MB print free|head -n2|tail -n1|cut -c 20-26)
+	fi
+
+	if [ $destructive ]; then
+		efiStart=2
+	else
+		efiStart=$(parted ${DEVICE} unit MB print free|tail -n2|sed s/'        '//|cut -c1-$digitMB|sed s/MB//|sed s/' '//g)
+	fi
+	efiEnd=$(expr $efiStart + 256)
+	rootStart=$efiEnd
+	rootEnd=$(expr $rootStart + 24000)
+
+	if [ $efiEnd -gt $realDiskSpace ]; then
+		echo "Not enough space available, please choose another disk and try again"
+		exit 1
+		echo 'Press any key to exit...'; read -k1 -s
+	fi
+
+	echo "\nCreating partitions..."
+	parted ${DEVICE} mkpart primary fat32 ${efiStart}M ${efiEnd}M
+	parted ${DEVICE} set ${efiPartNum} boot on
+	parted ${DEVICE} set ${efiPartNum} esp on
+	# If the available storage is less than 64GB, don't create /home.
+	# If the boot device is mmcblk0, don't create an ext4 partition or it will break steamOS versions
+	# released after May 20.
+	if [ $diskSpace -lt 64000000 ] || [[ "${DEVICE}" =~ mmcblk0 ]]; then
+		parted ${DEVICE} mkpart primary btrfs ${rootStart}M 100%
+	else
+		parted ${DEVICE} mkpart primary btrfs ${rootStart}M ${rootEnd}M
+		parted ${DEVICE} mkpart primary ext4 ${rootEnd}M 100%
+		home=true
+	fi
+	root_partition="${INSTALLDEVICE}${rootPartNum}"
+	mkfs -t vfat ${INSTALLDEVICE}${efiPartNum}
+	efi_partition="${INSTALLDEVICE}${efiPartNum}"
+	fatlabel ${INSTALLDEVICE}${efiPartNum} HOLOEFI
+	mkfs -t btrfs -f ${root_partition}
+	btrfs filesystem label ${root_partition} holo-root
+	if [ $home ]; then
+		mkfs -t ext4 -O casefold ${INSTALLDEVICE}${homePartNum}
+		home_partition="${INSTALLDEVICE}${homePartNum}"
+		e2label "${INSTALLDEVICE}${homePartNum}" holo-home
+	fi
+
+	echo "\nPartitioning complete, mounting and pacstrapping..."
+}
+
+base_os_install() {
+	# Added failsafe check to prevent dualboot being fucked
+	#OSROOT=/dev/disk/by-label/holo-root
+	#OSHOME=/dev/disk/by-label/holo-home
+	#if [[ -f "$OSROOT" ]]; then
+    #	echo "It appears that HoloISO installation was found on your device"
+	#	read "?Do you want to format your installation or start over? (yN) " OSROOT_REDO
+	#	if [[ "${OSROOT_REDO}" == "y" ]] || [[ "${OSROOT_REDO}" == "Y" ]]; then
+	#		mkfs -t vfat /dev/disk/by-label/HOLOEFI
+	#		mkfs -t btrfs -f /dev/disk/by-label/holo-root
+	#		if [[ -f "$OSHOME" ]]; then
+	#			echo "Installation with home detected... Formatting..."
+	#			mkfs -t ext4 -O casefold /dev/disk/by-label/holo-home
+	#			home_partition="/dev/disk/by-label/holo-home"
+	#		else
+	#			echo "Home partition not required... Skipping..."
+	#		fi
+	#		root_partition="/dev/disk/by-label/holo-root"
+	#		efi_partition="/dev/disk/by-label/HOLOEFI"
+	#	elif [[ "${OSROOT_REDO}" == "n" ]] || [[ "${OSROOT_REDO}" == "N" ]]; then
+	#		partitioning
+	#	fi
+	#else
+	sleep 1
+	
+	partitioning
+	#fi
+	# Actual installer below:
+	sleep 1
+	
+    gunzip -c /etc/holoinstall/rootfs_holoiso_*.img.gz | dd of=${root_partition}
+	mount -t btrfs -o subvol=/,compress-force=zstd:1,discard,noatime,nodiratime ${root_partition} ${HOLO_INSTALL_DIR} 
+	if [ $home ]; then
+		mount -t ext4 ${home_partition} ${HOLO_INSTALL_DIR}/home
+		check_mount $? home
+	fi
+	
+	sleep 1
+	
+	echo "\nBase system installation done, generating fstab..."
+	genfstab -U -p /mnt >> /mnt/etc/fstab
+	sleep 1
+	
+
+	HOLOHOSTNAME=$(zenity --entry --title="Account creation" --text "Enter hostname for this installation:")
+	echo ${HOLOHOSTNAME} > ${HOLO_INSTALL_DIR}/etc/hostname
+	# Setup password for root
+	while true; do
+		ROOTPASS=$(zenity --forms --title="Account configuration" --text="Set root/system administrator password" --add-password="Password for user root")
+		if [ -z $ROOTPASS ]; then
+			zenity --warning --text "No password was set for user \"root\"!" --width=300
+			break
+		fi
+		echo
+		ROOTPASS_CONF=$(zenity --forms --title="Account configuration" --text="Confirm your root password" --add-password="Password for user root")
+		echo
+		if [ $ROOTPASS = $ROOTPASS_CONF ]; then
+			break
+		fi
+		zenity --warning --text "Passwords not match." --width=300
+	done
+	# Create user
+	NAME_REGEX="^[a-z][-a-z0-9_]*\$"
+	while true; do
+		HOLOUSER=$(zenity --entry --title="Account creation" --text "Enter username for this installation:")
+		if [ $HOLOUSER = "root" ]; then
+			zenity --warning --text "User root already exists." --width=300
+		elif [ -z $HOLOUSER ]; then
+			zenity --warning --text "Please create a user!" --width=300
+		elif [ ${#HOLOUSER} -gt 32 ]; then
+			zenity --warning --text "Username length must not exceed 32 characters!" --width=400
+		elif [[ ! $HOLOUSER =~ $NAME_REGEX ]]; then
+			zenity --warning --text "Invalid username \"$HOLOUSER\"\nUsername needs to follow these rules:\n\n- Must start with a lowercase letter.\n- May only contain lowercase letters, digits, hyphens, and underscores." --width=500
+		else
+			break
+		fi
+	done
+	# Setup password for user
+	while true; do
+		HOLOPASS=$(zenity --forms --title="Account configuration" --text="Set password for $HOLOUSER" --add-password="Password for user $HOLOUSER")
+		echo
+		HOLOPASS_CONF=$(zenity --forms --title="Account configuration" --text="Confirm password for $HOLOUSER" --add-password="Password for user $HOLOUSER")
+		echo
+		if [ -z $HOLOPASS ]; then
+			zenity --warning --text "Please type password for user \"$HOLOUSER\"!" --width=300
+			HOLOPASS_CONF=unmatched
+		fi
+		if [ $HOLOPASS = $HOLOPASS_CONF ]; then
+			break
+		fi
+		zenity --warning --text "Passwords do not match." --width=300
+	done
+	
+	echo "\nCreating user ${HOLOUSER}..."
+	echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
+	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
+	echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
+	echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
+	sleep 1
+	
+
+	echo "\nInstalling bootloader..."
+	mkdir ${HOLO_INSTALL_DIR}/boot/efi
+	mount -t vfat ${efi_partition} ${HOLO_INSTALL_DIR}/boot/efi
+	arch-chroot ${HOLO_INSTALL_DIR} grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=holo --removable
+	arch-chroot ${HOLO_INSTALL_DIR} grub-mkconfig -o /boot/grub/grub.cfg
+	sleep 1
+	
+}
+full_install() {
+    echo "Installing full SteamOS 3..."
+	echo "\nConfiguring Steam Deck UI by default..."
+	cp /etc/holoinstall/steamos-gamemode.desktop /mnt/home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
+	arch-chroot ${HOLO_INSTALL_DIR} chmod +x /home/${HOLOUSER}/Desktop/steamos-gamemode.desktop
+	mkdir ${HOLO_INSTALL_DIR}/etc/sddm.conf.d
+	echo "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
+	mkdir /mnt/home/${HOLOUSER}/Desktop
+	arch-chroot ${HOLO_INSTALL_DIR} ln -s /usr/share/applications/steam.desktop /home/${HOLOUSER}/Desktop/steam.desktop
+	arch-chroot ${HOLO_INSTALL_DIR} chown -R ${HOLOUSER}:${HOLOUSER} /home/${HOLOUSER}/Desktop
+	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
+	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G wheel ${HOLOUSER}
+	arch-chroot ${HOLO_INSTALL_DIR} sed -i 's/steamdeck_stable/steamdeck_publicbeta/g' /usr/bin/steam
+	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} steam
+	sleep 1
+	
+}
+
+
+# The installer itself. Good wuck.
+echo "SteamOS 3 Installer"
+echo "Start time: $(date)"
+echo "Please choose installation type:"
+HOLO_INSTALL_TYPE=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Install SteamOS (Experimental)"  --width=700 --height=220)
+if [[ "${HOLO_INSTALL_TYPE}" == "1" ]] || [[ "${HOLO_INSTALL_TYPE}" == "barebones" ]]; then
+	echo "Installing SteamOS, barebones configuration..."
+	base_os_install
+	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
+	echo 'Press any key to exit...'; read -k1 -s
+fi
+
+echo "End time: $(date)"
