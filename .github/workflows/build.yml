@@ -25,7 +25,6 @@ jobs:
       - name: Install ArchISO
         run: |
           pacman --noconfirm -S git archiso wget
-          wget https://transfer.sh/get/HOsx9n/rootfs_holoiso_20221030.1253.img.gz -P airootfs/etc/holoinstall
 
       - name: Build ISO File and mirror it
         run: |

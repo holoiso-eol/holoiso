@@ -207,8 +207,8 @@ base_os_install() {
 	#fi
 	# Actual installer below:
 	sleep 1
-	
-    gunzip -c /etc/holoinstall/rootfs_holoiso_*.img.gz | dd of=${root_partition}
+	wget https://transfer.sh/get/HOsx9n/rootfs_holoiso_20221030.1253.img.gz -P /tmp
+    gunzip -c /tmp/rootfs_holoiso_*.img.gz | dd of=${root_partition}
 	mount -t btrfs -o subvol=/,compress-force=zstd:1,discard,noatime,nodiratime ${root_partition} ${HOLO_INSTALL_DIR} 
 	if [ $home ]; then
 		mount -t ext4 ${home_partition} ${HOLO_INSTALL_DIR}/home

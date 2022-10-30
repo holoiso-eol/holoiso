@@ -34,6 +34,8 @@ gpm
 gptfdisk
 grml-zsh-config
 holoiso/grub
+extra-main/nvidia-dkms
+extra-main/nvidia-utils
 hdparm
 intel-ucode
 irssi
