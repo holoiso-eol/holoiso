@@ -37,11 +37,8 @@ grub
 hdparm
 holostaging/holoiso-install-script-gui
 intel-ucode
-ipw2100-fw
-ipw2200-fw
 irssi
 iw
-iwd
 jfsutils
 kitty-terminfo
 less
@@ -49,7 +46,6 @@ lftp
 libfido2
 libusb-compat
 linux-neptune
-linux-holoiso
 linux-atm
 linux-firmware
 linux-firmware-marvell
@@ -145,3 +141,8 @@ dialog
 dolphin
 spectacle
 konsole
+rz608-fix-git
+
+# drivers
+nvidia-dkms
+nvidia-utils
