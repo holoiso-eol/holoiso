@@ -2,7 +2,7 @@
 # Prepares ISO for packaging
 
 # Remove useless shortcuts for now
-mv /etc/xdg/autostart/steam.desktop /etc/xdg/autostart/desktopshortcuts.desktop /etc/skel/Desktop/steamos-gamemode.desktop /etc/skel/Desktop/Return.desktop /etc/holoinstall/post_install_shortcuts
+mv /etc/skel/Desktop/Return.desktop /etc/holoinstall/post_install_shortcuts
 
 # Add a liveOS user
 ROOTPASS="holoconfig"
@@ -25,6 +25,7 @@ pacman -Sy
 pacman -Rcns --noconfirm pulseaudio xfce4-pulseaudio-plugin pulseaudio-alsa
 pacman -Rdd --noconfirm sddm
 pacman --overwrite="*" --noconfirm -S holoiso-main holo/filesystem holoiso-updateclient wireplumber flatpak packagekit-qt5 rsync unzip sddm-wayland dkms steam-im-modules systemd-swap ttf-twemoji-default ttf-hack ttf-dejavu pkgconf pavucontrol partitionmanager gamemode lib32-gamemode cpupower bluez-plugins bluez-utils
+mv /etc/xdg/autostart/steam.desktop /etc/xdg/autostart/desktopshortcuts.desktop /etc/skel/Desktop/steamos-gamemode.desktop /etc/holoinstall/post_install_shortcuts
 wget https://gdrivecdn.thevakhovske.pw/6:/holoiso/os/x86_64/lib32-nvidia-utils-515.57-1-x86_64.pkg.tar.zst -P /etc/holoinstall/post_install/pkgs
 pacman -U --noconfirm /etc/holoinstall/post_install/pkgs/lib32-nvidia-utils-515.57-1-x86_64.pkg.tar.zst
 
@@ -48,3 +49,9 @@ cp /etc/holoinstall/post_install/mkinitcpio_presets/linux-neptune.preset /etc/mk
 chmod +x /etc/holoinstall/post_install/install_holoiso.sh
 chmod +x /etc/skel/Desktop/install.desktop
 chmod 755 /etc/skel/Desktop/install.desktop
+
+# Remove stupid stuff on build
+rm /home/${LIVEOSUSER}/steam.desktop /home/${LIVEOSUSER}/steamos-gamemode.desktop
+
+# Remove this shit from post-build
+rm -rf /etc/holoinstall/pre_install
