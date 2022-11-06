@@ -23,7 +23,8 @@ pacman -Sy
 
 # Install desktop suite
 pacman -Rcns --noconfirm pulseaudio xfce4-pulseaudio-plugin pulseaudio-alsa
-pacman --overwrite="*" -S holoiso-main holo/filesystem holoiso-updateclient wireplumber flatpak packagekit-qt5 rsync unzip sddm-wayland dkms
+pacman -Rdd --noconfirm sddm
+pacman --overwrite="*" --noconfirm -S holoiso-main holo/filesystem holoiso-updateclient wireplumber flatpak packagekit-qt5 rsync unzip sddm-wayland dkms steam-im-modules systemd-swap ttf-twemoji-default ttf-hack ttf-dejavu pkgconf pavucontrol partitionmanager gamemode lib32-gamemode cpupower bluez-plugins bluez-utils
 wget https://gdrivecdn.thevakhovske.pw/6:/holoiso/os/x86_64/lib32-nvidia-utils-515.57-1-x86_64.pkg.tar.zst -P /etc/holoinstall/post_install/pkgs
 pacman -U --noconfirm /etc/holoinstall/post_install/pkgs/lib32-nvidia-utils-515.57-1-x86_64.pkg.tar.zst
 
