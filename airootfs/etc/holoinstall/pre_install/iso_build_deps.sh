@@ -1,6 +1,19 @@
 #!/bin/zsh
 # Prepares ISO for packaging
 
+# Add a liveOS user
+ROOTPASS="holoconfig"
+LIVEOSUSER="liveuser"
+
+echo -e "${ROOTPASS}\n${ROOTPASS}" | passwd root
+useradd --create-home ${LIVEOSUSER}
+echo -e "${ROOTPASS}\n${ROOTPASS}" | passwd ${LIVEOSUSER}
+echo "${LIVEOSUSER} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${LIVEOSUSER}
+chmod 0440 /etc/sudoers.d/${LIVEOSUSER}
+usermod -a -G rfkill ${LIVEOSUSER}
+usermod -a -G wheel ${LIVEOSUSER}
+# Begin coreOS bootstrapping below:
+
 # Init pacman keys
 pacman-key --init
 pacman -Sy
@@ -15,7 +28,7 @@ pacman -U --noconfirm /etc/holoinstall/post_install/pkgs/lib32-nvidia-utils-515.
 mv /etc/xdg/autostart/steam.desktop /etc/xdg/autostart/desktopshortcuts.desktop /etc/skel/Desktop/steamos-gamemode.desktop /etc/skel/Desktop/Return.desktop /etc/holoinstall/post_install_shortcuts
 
 # Enable stuff
-systemctl enable sddm NetworkManager systemd-timesyncd cups bluetooth
+systemctl enable sddm NetworkManager systemd-timesyncd cups bluetooth sshd
 
 # Download extra stuff
 mkdir -p /etc/holoinstall/post_install/pkgs
