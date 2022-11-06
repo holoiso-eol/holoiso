@@ -29,7 +29,9 @@ jobs:
 
       - name: Build ISO File
         run: |
-          mkarchiso -v .
+          cp mkarchiso-holoiso /usr/bin
+          chmod +x /usr/bin/mkarchiso-holoiso
+          mkarchiso-holoiso -v .
           find out/
 
       - uses: actions/upload-artifact@v2
