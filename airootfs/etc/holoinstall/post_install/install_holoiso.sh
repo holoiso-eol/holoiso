@@ -312,15 +312,11 @@ full_install() {
 	fi
 	echo "\nConfiguring Steam Deck UI by default..."		
     ln -s /usr/share/applications/steam.desktop ${HOLO_INSTALL_DIR}/etc/skel/Desktop/steam.desktop
-	echo "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
-	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable holoiso-reboot-tracker
+	echo -e "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop\nRelogin=true\n\n[X11]\n# Janky workaround for wayland sessions not stopping in sddm, kills\n# all active sddm-helper sessions on teardown\nDisplayStopCommand=/usr/bin/gamescope-wayland-teardown-workaround" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G wheel ${HOLOUSER}
 	echo "Preparing Steam OOBE..."
 	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} steam
-	check_download $? "installing flatpak"
-	echo "Preparing flatpak..."
-	arch-chroot ${HOLO_INSTALL_DIR} flatpak remote-add --if-not-exists flathub-beta /etc/holoinstall/post_install/flathub-beta.flatpakrepo
 	echo "Cleaning up..."
     arch-chroot ${HOLO_INSTALL_DIR} rm -rf /etc/holoinstall
 	sleep 1
@@ -332,21 +328,15 @@ full_install() {
 echo "SteamOS 3 Installer"
 echo "Start time: $(date)"
 echo "Please choose installation type:"
-HOLO_INSTALL_TYPE=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "barebones (Will install base SteamOS 3 root filesystem and hooks)" \2 "deck-experience (Will install full SteamOS 3 including gamescope and Plasma DE)"  --width=700 --height=220)
+HOLO_INSTALL_TYPE=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Install HoloISO, version $(cat /etc/os-release | grep VARIANT_ID | cut -d "=" -f 2 | sed 's/"//g') " \2 "Exit installer"  --width=700 --height=220)
 if [[ "${HOLO_INSTALL_TYPE}" == "1" ]] || [[ "${HOLO_INSTALL_TYPE}" == "barebones" ]]; then
 	echo "Installing SteamOS, barebones configuration..."
-	base_os_install
-	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
-	echo 'Press any key to exit...'; read -k1 -s
-elif [[ "${HOLO_INSTALL_TYPE}" == "2" ]]; then
-
-	echo "Installing SteamOS, deckperience configuration..."
 	base_os_install
 	full_install
 	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
 	echo 'Press any key to exit...'; read -k1 -s
 else
-	echo "Invalid choice. Exiting installer..."
+	echo "Exiting installer..."
 fi
 
 echo "End time: $(date)"
