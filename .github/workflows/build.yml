@@ -34,11 +34,16 @@ jobs:
           mkarchiso-holoiso -v .
           find out/
           
+      - name: Split file
+        run: |
+          zip -r -s 1g out/$(ls out).zip out/$(ls out)
+          rm out/HoloISO*.iso
+          
       - uses: xresloader/upload-to-github-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "out/*.iso"
+          file: "out/*"
           tags: true
           draft: true
           prerelease: true
