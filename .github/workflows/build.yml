@@ -25,7 +25,7 @@ jobs:
       - name: Install ArchISO
         run: |
           pacman -Sy
-          pacman --noconfirm -S git archiso
+          pacman --noconfirm -S git zip archiso
 
       - name: Build ISO File
         run: |
