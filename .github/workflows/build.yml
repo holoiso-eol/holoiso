@@ -33,8 +33,12 @@ jobs:
           chmod +x /usr/bin/mkarchiso-holoiso
           mkarchiso-holoiso -v .
           find out/
-
-      - uses: actions/upload-artifact@v2
+          
+      - uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: holoiso
-          path: out/*.iso
+          file: "out/*.iso"
+          tags: true
+          draft: true
+          prerelease: true
