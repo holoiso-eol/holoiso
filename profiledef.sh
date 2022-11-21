@@ -14,6 +14,7 @@ pacman_conf="pacman.conf"
 airootfs_image_type="squashfs"
 airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')
 file_permissions=(
-  ["/etc/skel/Desktop/ime-kb.desktop"]="0:0:755"  
+  ["/etc/skel/Desktop/ime-kb.desktop"]="0:0:755"
+  ["/etc/skel/Desktop/install.desktop"]="0:0:755"    
   ["/etc/xdg/autostart/folder-struct.desktop"]="0:0:755"
 )
