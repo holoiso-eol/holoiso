@@ -1,2 +1,0 @@
-GRUB_TIMEOUT=5
-GRUB_CMDLINE_LINUX_DEFAULT="quiet splash loglevel=3 rd.udev.log_priority=3 vt.global_cursor_default=0"

@@ -7,12 +7,10 @@ IS_STEAMDECK=$(cat /sys/devices/virtual/dmi/id/product_name | grep Jupiter)
 
 if [ -n "${IS_WIN600}" ]; then
 	GAMEPAD_DRV="1"
-	INST_MSG1=$(echo "You're running this on Anbernic Win600. A suitable gamepad driver will be installed.")
 fi
 
 if [ -n "${IS_STEAMDECK}" ]; then
 	FIRMWARE_INSTALL="1"
-	INST_MSG1=$(echo "You're running this on a Steam Deck. linux-firmware-neptune will be installed to ensure maximum kernel-side compatibility.")
 fi
 
 check_mount(){
@@ -204,6 +202,10 @@ base_os_install() {
 	check_mount $? root
 	${CMD_MOUNT_BOOT}
 	check_mount $? boot
+	if [ $home ]; then
+		mount -t ext4 ${home_partition} ${HOLO_INSTALL_DIR}/home
+		check_mount $? home
+	fi
 	echo "Bootstrapping root filesystem...\nThis may take more than 10 minutes.\n"
     rsync -axHAWXS --numeric-ids --info=progress2 / ${HOLO_INSTALL_DIR}
 	arch-chroot ${HOLO_INSTALL_DIR} install -Dm644 "$(find /usr/lib | grep vmlinuz | grep neptune)" "/boot/vmlinuz-$(cat /usr/lib/modules/*neptune*/pkgbase)"
@@ -217,10 +219,6 @@ base_os_install() {
 	check_download $? "installing base package"
 	sleep 2
 	clear
-	if [ $home ]; then
-		mount -t ext4 ${home_partition} ${HOLO_INSTALL_DIR}/home
-		check_mount $? home
-	fi
 	
 	sleep 1
 	clear
@@ -307,7 +305,7 @@ full_install() {
 	if [[ "${FIRMWARE_INSTALL}" == "1" ]]; then
 		echo "You're running this on a Steam Deck. linux-firmware-neptune will be installed to ensure maximum kernel-side compatibility."
 		arch-chroot ${HOLO_INSTALL_DIR} pacman -Rdd --noconfirm linux-firmware
-		arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs_addon | grep linux-neptune-firmware)
+		arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs_addon | grep linux-firmware-neptune)
 		arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
 	fi
 	echo "\nConfiguring Steam Deck UI by default..."		
@@ -333,10 +331,9 @@ if [[ "${HOLO_INSTALL_TYPE}" == "1" ]] || [[ "${HOLO_INSTALL_TYPE}" == "barebone
 	echo "Installing SteamOS, barebones configuration..."
 	base_os_install
 	full_install
-	echo "Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes"
-	echo 'Press any key to exit...'; read -k1 -s
+	zenity --warning --text="Installation finished! You may reboot now, or type arch-chroot /mnt to make further changes" --width=700 --height=50
 else
-	echo "Exiting installer..."
+	zenity --warning --text="Exiting installer..." --width=120 --height=50
 fi
 
 echo "End time: $(date)"
