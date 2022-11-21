@@ -354,7 +354,7 @@ _make_packages() {
         env -u TMPDIR pacstrap -C "${work_dir}/${buildmode}.pacman.conf" -c -G -M -- "${pacstrap_dir}" "${buildmode_pkg_list[@]}"
         env -u TMPDIR arch-chroot "${pacstrap_dir}" chmod +x /etc/holoinstall/pre_install/iso_build_deps.sh
         env -u TMPDIR arch-chroot "${pacstrap_dir}" /etc/holoinstall/pre_install/iso_build_deps.sh
-        env -u TMPDIR arch-chroot "${pacstrap_dir}" pacman -Q > ${image_name:-None}-PKGLIST.pacman
+        env -u TMPDIR arch-chroot "${pacstrap_dir}" pacman -Q > /${image_name:-None}-PKGLIST.pacman
         env -u TMPDIR mv "${pacstrap_dir}/${image_name:-None}-PKGLIST.pacman" ${profile}
     fi
 
