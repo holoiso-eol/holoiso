@@ -38,3 +38,7 @@ jobs:
         with:
           name: holoiso
           path: out/*.iso
+      - uses: actions/upload-artifact@v2
+        with:
+          name: holoiso-misc-data
+          path: *-PKGLIST.pacman
