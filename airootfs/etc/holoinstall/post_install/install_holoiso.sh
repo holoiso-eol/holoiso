@@ -159,12 +159,22 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	mkfs -t btrfs -f ${root_partition}
 	btrfs filesystem label ${root_partition} holo-root
 	if [ $home ]; then
-		mkfs -t ext4 -O casefold ${INSTALLDEVICE}${homePartNum}
-		home_partition="${INSTALLDEVICE}${homePartNum}"
-		e2label "${INSTALLDEVICE}${homePartNum}" holo-home
+		if [[ -n "$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" ]]; then
+			HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="A HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
+				if [[ "${HOME_REUSE_TYPE}" == "1" ]]; then
+					mkfs -t ext4 -F -O casefold ${INSTALLDEVICE}${homePartNum}
+					home_partition="${INSTALLDEVICE}${homePartNum}"
+					e2label "${INSTALLDEVICE}${homePartNum}" holo-home
+				elif [[ "${HOME_REUSE_TYPE}" == "2" ]]; then
+					echo "Home partition will be reused at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)"
+				fi
+		else
+			mkfs -t ext4 -O casefold ${INSTALLDEVICE}${homePartNum}
+			home_partition="${INSTALLDEVICE}${homePartNum}"
+			e2label "${INSTALLDEVICE}${homePartNum}" holo-home
+		fi
 	fi
-
-	echo "\nPartitioning complete, mounting and pacstrapping..."
+	echo "\nPartitioning complete, mounting and installing."
 }
 
 base_os_install() {
@@ -206,8 +216,7 @@ base_os_install() {
 		mount -t ext4 ${home_partition} ${HOLO_INSTALL_DIR}/home
 		check_mount $? home
 	fi
-	echo "Bootstrapping root filesystem...\nThis may take more than 10 minutes.\n"
-    rsync -axHAWXS --numeric-ids --info=progress2 / ${HOLO_INSTALL_DIR}
+    rsync -axHAWXS --numeric-ids --info=progress2 --no-inc-recursive / ${HOLO_INSTALL_DIR} |    tr '\r' '\n' |    awk '/^ / { print int(+$2) ; next } $0 { print "# " $0 }' | zenity --progress --title="Installing base OS..." --text="Bootstrapping root filesystem...\nThis may take more than 10 minutes.\n" --width=500 --no-cancel --auto-close
 	arch-chroot ${HOLO_INSTALL_DIR} install -Dm644 "$(find /usr/lib | grep vmlinuz | grep neptune)" "/boot/vmlinuz-$(cat /usr/lib/modules/*neptune*/pkgbase)"
 	cp -r /etc/holoinstall/post_install/pacman.conf ${HOLO_INSTALL_DIR}/etc/pacman.conf
 	arch-chroot ${HOLO_INSTALL_DIR} pacman-key --init
