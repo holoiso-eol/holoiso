@@ -327,6 +327,7 @@ full_install() {
 	echo "Preparing Steam OOBE..."
 	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} steam
 	echo "Cleaning up..."
+	cp /etc/skel/.bashrc ${HOLO_INSTALL_DIR}/home/${HOLOUSER}
     arch-chroot ${HOLO_INSTALL_DIR} rm -rf /etc/holoinstall
 	sleep 1
 	clear

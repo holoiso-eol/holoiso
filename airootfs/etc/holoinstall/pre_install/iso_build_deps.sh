@@ -10,7 +10,7 @@ chmod +x /etc/skel/Desktop/install.desktop
 chmod 755 /etc/skel/Desktop/install.desktop
 
 # Remove stupid stuff on build
-rm /home/${LIVEOSUSER}/steam.desktop /home/${LIVEOSUSER}/steamos-gamemode.desktop
+rm /home/${LIVEOSUSER}/steam.desktop
 
 # Add a liveOS user
 ROOTPASS="holoconfig"
