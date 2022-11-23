@@ -167,7 +167,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 					e2label "${INSTALLDEVICE}${homePartNum}" holo-home
 				elif [[ "${HOME_REUSE_TYPE}" == "2" ]]; then
 					echo "Home partition will be reused at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)"
-                                        home_partition="${INSTALLDEVICE}${homePartNum}"
+                    home_partition="${INSTALLDEVICE}${homePartNum}"
 				fi
 		else
 			mkfs -t ext4 -O casefold ${INSTALLDEVICE}${homePartNum}
@@ -214,7 +214,7 @@ base_os_install() {
 	${CMD_MOUNT_BOOT}
 	check_mount $? boot
 	if [ $home ]; then
-                mkdir -p ${HOLO_INSTALL_DIR}/home
+        mkdir -p ${HOLO_INSTALL_DIR}/home
 		mount -t ext4 ${home_partition} ${HOLO_INSTALL_DIR}/home
 		check_mount $? home
 	fi
