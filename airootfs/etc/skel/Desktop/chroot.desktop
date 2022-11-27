@@ -1,13 +1,13 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=sudo /etc/holoinstall/post_install/install_holoiso.sh
+Exec=sudo /etc/holoinstall/post_install/chroot_holoiso.sh
 GenericName[en_US]=
 GenericName=
 Icon=run-install
 MimeType=
-Name[en_US]=Install SteamOS on this machine
-Name=Installs HoloISO on this device 
+Name[en_US]=Chroot to valid HoloISO Installation
+Name=Opens terminal window with mounted HoloISO partitions
 Path=
 StartupNotify=true
 Terminal=true
