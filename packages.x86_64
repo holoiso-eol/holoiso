@@ -141,7 +141,3 @@ dolphin
 spectacle
 konsole
 rz608-fix-git
-
-# drivers
-nvidia-dkms
-nvidia-utils

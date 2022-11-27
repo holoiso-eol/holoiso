@@ -226,7 +226,6 @@ base_os_install() {
 	arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
     arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs | grep pkg.tar.zst)
 	arch-chroot ${HOLO_INSTALL_DIR} userdel -r liveuser
-    arch-chroot ${HOLO_INSTALL_DIR} rm -rf /home/*
 	check_download $? "installing base package"
 	sleep 2
 	clear
