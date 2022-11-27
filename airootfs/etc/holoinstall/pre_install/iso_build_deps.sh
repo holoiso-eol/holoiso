@@ -6,6 +6,7 @@ mv /etc/skel/Desktop/Return.desktop /etc/holoinstall/post_install_shortcuts
 
 # Prepare thyself
 chmod +x /etc/holoinstall/post_install/install_holoiso.sh
+chmod +x /etc/holoinstall/post_install/chroot_holoiso.sh
 chmod +x /etc/skel/Desktop/install.desktop
 chmod 755 /etc/skel/Desktop/install.desktop
 
