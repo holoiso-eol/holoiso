@@ -32,7 +32,10 @@ pacman -Sy
 # Install desktop suite
 pacman -Rcns --noconfirm pulseaudio xfce4-pulseaudio-plugin pulseaudio-alsa
 pacman -Rdd --noconfirm sddm linux syslinux
-pacman --overwrite="*" --noconfirm -S holoiso-main holo/filesystem holoiso-updateclient wireplumber flatpak packagekit-qt5 rsync unzip sddm-wayland dkms steam-im-modules systemd-swap ttf-twemoji-default ttf-hack ttf-dejavu pkgconf pavucontrol partitionmanager gamemode lib32-gamemode cpupower bluez-plugins bluez-utils
+pacman --overwrite="*" --noconfirm -S holoiso-main
+mv /etc/pacman.conf /etc/pacold
+cp /etc/holoinstall/post_install/pacman.conf /etc/pacman.conf
+pacman --overwrite="*" --noconfirm -S holoiso-updateclient wireplumber flatpak packagekit-qt5 rsync unzip sddm-wayland dkms steam-im-modules systemd-swap ttf-twemoji-default ttf-hack ttf-dejavu pkgconf pavucontrol partitionmanager gamemode lib32-gamemode cpupower bluez-plugins bluez-utils
 mv /etc/xdg/autostart/steam.desktop /etc/xdg/autostart/desktopshortcuts.desktop /etc/skel/Desktop/steamos-gamemode.desktop /etc/holoinstall/post_install_shortcuts
 
 # Enable stuff
@@ -53,3 +56,6 @@ cp /etc/holoinstall/post_install/mkinitcpio_presets/linux-neptune.preset /etc/mk
 
 # Remove this shit from post-build
 rm -rf /etc/holoinstall/pre_install
+rm /etc/pacman.conf
+mv /etc/pacold /etc/pacman.conf
+rm /home/.steamos/offload/var/cache/pacman/pkg/*
