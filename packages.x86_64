@@ -35,7 +35,6 @@ gptfdisk
 grml-zsh-config
 grub
 hdparm
-holostaging/holoiso-install-script-gui
 intel-ucode
 irssi
 iw
@@ -124,8 +123,7 @@ plasma-nm
 plasma-meta
 steamdeck-kde-presets
 xorg-server
-lightdm
-lightdm-gtk-greeter
+vim
 xdg-user-dirs
 bash-completion
 networkmanager
@@ -143,7 +141,3 @@ dolphin
 spectacle
 konsole
 rz608-fix-git
-
-# drivers
-nvidia-dkms
-nvidia-utils
