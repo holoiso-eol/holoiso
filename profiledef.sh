@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
-iso_name="HoloISO_Stable_OfflineInstaller"
+iso_name="HoloISO_4.0_OfflineInstaller"
 iso_label="HOLO_$(date +%Y%m)"
 iso_publisher="theVakhovske <https://github.com/theVakhovskeIsTaken>"
 iso_application="HoloISO Installer Image"
