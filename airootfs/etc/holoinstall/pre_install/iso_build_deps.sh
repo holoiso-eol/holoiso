@@ -2,6 +2,7 @@
 # Prepares ISO for packaging
 
 # Remove useless shortcuts for now
+mkdir /etc/holoinstall/post_install_shortcuts
 mv /etc/skel/Desktop/Return.desktop /etc/holoinstall/post_install_shortcuts
 
 # Prepare thyself
