@@ -6,8 +6,8 @@ SteamOS 3 (Holo) archiso configuration.
 
 ***Yes, Gabe. SteamOS functions well on a toaster.***
 
-This project attempts to bring the Steam Deck's SteamOS Holo into a generic, installable format, and provide a close-to-official SteamOS experience.
-Main point of this project focuses in re-implementing proprietary (as in runs-only-on-deck) components that Steam client, OS itself, gamescope and user-created applications for Deck rely on.
+This project attempts to bring the Steam Deck's SteamOS Holo redistribution into a generic, installable format, and provide a close-to-official SteamOS experience.
+Main point of this project focuses in re-implementing proprietary (as in runs-only-on-deck) components that Steam client, OS itself, gamescope and user-created applications for Deck rely on and making me learn Linux in a fun and unique way.
 
 Click [here](https://t.me/HoloISO) to join **HoloISO** Telegram update channel;
 
@@ -16,9 +16,9 @@ Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO*
 **Common Questions**
 
 - Is this official?
-> No, but it may as well be 99% of the way there. The code and packages, are straight from Valve, with zero possible edits, and the ISO is being built on the official Steam Deck recovery image, running inside a QEMU instance.
-- The ISO didn't boot for me, any solution?
-> Currently, the ISO only boots if flashed using [BalenaEtcher](https://www.balena.io/etcher/), [RosaImageWriter](http://wiki.rosalab.ru/en/index.php/ROSA_ImageWriter), [Fedora Media Writer](https://getfedora.org/en/workstation/download/), DD with 4MB block size, or [Rufus](https://rufus.ie) with DD mode.
+> No, but it may as well be 99% of the way there. The code and packages, are straight from Valve, with zero possible edits, and the ISO is being built same rootfs bootstrap as all HoloISO installations run
+- I have an NVIDIA G-
+> No. Not even questionable. If you have an NVIDIA GPU, You're on your own. Latest Valve updates for Steam client including normal and Jupiter bootstraps have broken gamepadui on NVIDIA GPUs, and if so, no support will be provided for you.
 
 
 **Working stuff:**
@@ -35,44 +35,28 @@ Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO*
 - Cool-looking neofetch?
 - System updates
 
-(*0) Disabled for ALL systems due to VERY LOW hardcoded TDP/Clock values, especially for dGPUs.
+**Working stuff on Steam Deck compared to other distributions:**
+- Dock Firmware updater (additionally installable in desktop by running sudo pacman -S jupiter-dock-updater-bin)
+- Steam Deck BIOS, Controller firmware, OS firmware updater
+- New fan curve control
+- TDP/Clock control
 
-**Known issues:**
-- NVIDIA GPUs are supported after following this procedure:
-
-> Only 10xx+ GPUs are FULLY supported(*1). Although 9xx support exists in drivers, gamescope doesn't launch on it. Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install required packages.
-
-(*1) The NVIDIA support is still pretty wonky. GamepadUI will lag, meanwhile games will run fine, session startup is very random too, usually boots in 5/10 of attempts
-
-> Older GPUs won't be supported until drivers are opensourced OR Until they support atomic KMS, accelerated Xwayland, and Vulkan DMA-BUF extensions, they simply cannot function properly with HoloISO.
-
-- Intel GPUs/iGPUs require a Gamescope downgrade in order to boot into Steam Deck session. 
-
-> Choose your GPU type while installing HoloISO. If you encounter any issues, reboot to recovery mode, type `recoveryinit`, connect to network using `nmtui` and install required packages.
+(*0) Disabled for ALL systems except for Steam Deck (Valve Jupiter 1) due to VERY LOW hardcoded TDP/Clock values, especially for dGPUs.
 
 Installation process:
 -
 **Prerequistes:**
 - 4GB flash drive
-- AMD RX Vega+/APU iGPU; 4xx/5xx, 5xxx/6xxx GPU
-or Intel UHD 630+ iGPU or NVIDIA GTX 9xx+ iGPU/GPUs (preferably without Optimus [PRIME])
+- More than 8 GB RAM if you plan to use "Copy-To-RAM" option to install
+- AMD GPU that supports RADV Drivers instead of Radeon (Southern Islands and Sea Islands require additional kernel cmdline property); Intel iGPU all the way up to 11th gen Iris Xe (Arc GPUs are not supported at this moment)
 - UEFI-enabled device
 - Disabled secure boot
 
-**Installation types:**
-- barebones 
-> An OS-only installation, resembles vanilla Arch Linux installation.
-- gameonly*
-> Steam Deck UI only (AMD GPU only; no desktop), as said, this doesn't ship any DE, and only has the Steam Deck UI installed. 
-> ****This part is currently under a renovation.***
-- deckperience
-> Full SteamOS 3 experience, Includes proper session switching, KDE Plasma + media apps, and Chromium pre-installed.
-
 **Installation:**
-- Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) or [actions](https://nightly.link/theVakhovskeIsTaken/holoiso/workflows/build/3.0/holoiso) for NVIDIA GPUs using [BalenaEtcher](https://www.balena.io/etcher/), [Rufus](https://rufus.ie) with DD mode, or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`
+- Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) or [actions](https://nightly.link/theVakhovskeIsTaken/holoiso/workflows/build/3.0/holoiso) for NVIDIA GPUs using [BalenaEtcher](https://www.balena.io/etcher/), [Rufus](https://rufus.ie) with DD mode, or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`, or by simply throwing ISO into Ventoy drive
 - Boot into ISO
-- Run `holoinstall`
-- Enter drive node, starting from, for example, `sda` or `nvme0n1` when asked
+- Click on "Install SteamOS on this device"
+- Follow on-screen instructions
 - Take your favourite hot beverage, and wait 'till it installs :3
 
 Upon booting, you'll be greeted with Steam Deck's OOBE screen, from where you'll connect to your network, and login to your Steam account, from there, you can exit to KDE Plasma seamlessly by choosing *Switch to desktop* in the power menu, [like so](https://www.youtube.com/watch?v=smfwna2iHho).
@@ -103,7 +87,9 @@ Trigger the build by executing:
 ```
 pacman -Sy archiso
 git clone https://github.com/bhaiest/holoiso/
-sudo mkarchiso -v holoiso
+mv holoiso/mkarchiso-holoiso /usr/bin
+chmod +x /usr/bin/mkarchiso-holoiso
+sudo mkarchiso-holoiso -v holoiso
 ```
 Once it ends, your ISO will be available in the `out` folder.
 
