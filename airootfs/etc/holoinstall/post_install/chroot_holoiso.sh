@@ -14,6 +14,7 @@ else
     sleep 5
     exit 1
 fi
+
 HOMEPART=$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)
 EFIPART=$(sudo blkid | grep HOLOEFI | cut -d ':' -f 1 | head -n 1)
 
@@ -24,20 +25,26 @@ if [ -n "${CHK_MNT}" ]; then
 fi
 
 # Create an mountpoint
+sudo rm -rf ${MOUNT_DIR}
 sudo mkdir -p ${MOUNT_DIR}
 
 # Inform user about partition location
 echo "Your HoloISO EFI Partition is located in ${EFIPART} partition."
 echo "Your HoloISO Root Partition is located in ${ROOTPART} partition."
-echo "Your HoloISO Home Partition is located in ${HOMEPART} partition."
+if [ -n "${HOMEPART}" ]; then
+    echo "Your HoloISO Home Partition is located in ${HOMEPART} partition."
+fi
 
 # Mount partitions
 sudo mount ${ROOTPART} ${MOUNT_DIR}
-sudo mount ${HOMEPART} ${MOUNT_DIR}/home
+if [ -n "${HOMEPART}" ]; then
+    sudo mount ${HOMEPART} ${MOUNT_DIR}/home
+fi
 sudo mount ${EFIPART} ${MOUNT_DIR}/boot/efi
 
 # Check for version
 echo "Your HoloISO Installation version: $(cat ${MOUNT_DIR}/etc/os-release | grep VARIANT_ID | cut -d '"' -f 2)\n"
+echo "Currently installed kernel versions: $(cat ${MOUNT_DIR}/usr/src/linux*/version)"
 
 # Chroot!
 sudo arch-chroot ${MOUNT_DIR}
