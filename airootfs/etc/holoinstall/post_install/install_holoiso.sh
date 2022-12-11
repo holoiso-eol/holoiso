@@ -54,12 +54,12 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	install=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Erase entire drive" \2 "Install alongside existing OS/Partition (Requires at least 50 GB of free space from the end)"  --width=700 --height=220)
 	if [[ -n "$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" ]]; then
 		HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="A HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
-			mkdir -p /tmp/home
-			mount $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1) /tmp/home
-				if [[ -d "/tmp/home/.steamos" ]]; then
-					echo "Migration data found. Proceeding"
-					umount -l $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)
-				else
+		mkdir -p /tmp/home
+		mount $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1) /tmp/home
+			if [[ -d "/tmp/home/.steamos" ]]; then
+				echo "Migration data found. Proceeding"
+				umount -l $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)
+			else
 					(
 					sleep 2
 					echo "10"
@@ -80,13 +80,60 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 					echo "System directory moving complete. Preparing to move flatpak content."
 					echo "30" ; sleep 1
 					echo "Starting flatpak data migration.\nThis may take 2 to 10 minutes to complete."
-					rsync -axHAWXS --numeric-ids --info=progress2 --no-inc-recursive /tmp/rootpart/var/lib/flatpak /tmp/home/.steamos/offload/var/lib/flatpak |    tr '\r' '\n' |    awk '/^ / { print int(+$2) ; next } $0 { print "# " $0 }'
+					rsync -axHAWXS --numeric-ids --info=progress2 --no-inc-recursive /tmp/rootpart/var/lib/flatpak /tmp/home/.steamos/offload/var/lib/ |    tr '\r' '\n' |    awk '/^ / { print int(+$2) ; next } $0 { print "# " $0 }'
 					echo "Finished."
 					) |
 					zenity --progress --title="Preparing to reuse home at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" --text="Starting to move following directories to target offload:\n\n- /opt\n- /root\n- /srv\n- /usr/lib/debug\n- /usr/local\n- /var/cache/pacman\n- /var/lib/docker\n- /var/lib/systemd/coredump\n- /var/log\n- /var/tmp\n" --width=500 --no-cancel --percentage=0 --auto-close
 					umount -l $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)
 					umount -l $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1)
 				fi
+	fi
+	# Setup password for root
+	while true; do
+		ROOTPASS=$(zenity --forms --title="Account configuration" --text="Set root/system administrator password" --add-password="Password for user root")
+		if [ -z $ROOTPASS ]; then
+			zenity --warning --text "No password was set for user \"root\"!" --width=300
+			break
+		fi
+		echo
+		ROOTPASS_CONF=$(zenity --forms --title="Account configuration" --text="Confirm your root password" --add-password="Password for user root")
+		echo
+		if [ $ROOTPASS = $ROOTPASS_CONF ]; then
+			break
+		fi
+		zenity --warning --text "Passwords not match." --width=300
+	done
+	# Create user
+	NAME_REGEX="^[a-z][-a-z0-9_]*\$"
+	while true; do
+		HOLOUSER=$(zenity --entry --title="Account creation" --text "Enter username for this installation:")
+		if [ $HOLOUSER = "root" ]; then
+			zenity --warning --text "User root already exists." --width=300
+		elif [ -z $HOLOUSER ]; then
+			zenity --warning --text "Please create a user!" --width=300
+		elif [ ${#HOLOUSER} -gt 32 ]; then
+			zenity --warning --text "Username length must not exceed 32 characters!" --width=400
+		elif [[ ! $HOLOUSER =~ $NAME_REGEX ]]; then
+			zenity --warning --text "Invalid username \"$HOLOUSER\"\nUsername needs to follow these rules:\n\n- Must start with a lowercase letter.\n- May only contain lowercase letters, digits, hyphens, and underscores." --width=500
+		else
+			break
+		fi
+	done
+	# Setup password for user
+	while true; do
+		HOLOPASS=$(zenity --forms --title="Account configuration" --text="Set password for $HOLOUSER" --add-password="Password for user $HOLOUSER")
+		echo
+		HOLOPASS_CONF=$(zenity --forms --title="Account configuration" --text="Confirm password for $HOLOUSER" --add-password="Password for user $HOLOUSER")
+		echo
+		if [ -z $HOLOPASS ]; then
+			zenity --warning --text "Please type password for user \"$HOLOUSER\"!" --width=300
+			HOLOPASS_CONF=unmatched
+		fi
+		if [ $HOLOPASS = $HOLOPASS_CONF ]; then
+			break
+		fi
+		zenity --warning --text "Passwords do not match." --width=300
+	done
 	case $install in
 		1)
 			destructive=true
@@ -212,33 +259,9 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 }
 
 base_os_install() {
-	# Added failsafe check to prevent dualboot being fucked
-	#OSROOT=/dev/disk/by-label/holo-root
-	#OSHOME=/dev/disk/by-label/holo-home
-	#if [[ -f "$OSROOT" ]]; then
-    #	echo "It appears that HoloISO installation was found on your device"
-	#	read "?Do you want to format your installation or start over? (yN) " OSROOT_REDO
-	#	if [[ "${OSROOT_REDO}" == "y" ]] || [[ "${OSROOT_REDO}" == "Y" ]]; then
-	#		mkfs -t vfat /dev/disk/by-label/HOLOEFI
-	#		mkfs -t btrfs -f /dev/disk/by-label/holo-root
-	#		if [[ -f "$OSHOME" ]]; then
-	#			echo "Installation with home detected... Formatting..."
-	#			mkfs -t ext4 -O casefold /dev/disk/by-label/holo-home
-	#			home_partition="/dev/disk/by-label/holo-home"
-	#		else
-	#			echo "Home partition not required... Skipping..."
-	#		fi
-	#		root_partition="/dev/disk/by-label/holo-root"
-	#		efi_partition="/dev/disk/by-label/HOLOEFI"
-	#	elif [[ "${OSROOT_REDO}" == "n" ]] || [[ "${OSROOT_REDO}" == "N" ]]; then
-	#		partitioning
-	#	fi
-	#else
 	sleep 1
 	clear
 	partitioning
-	#fi
-	# Actual installer below:
 	echo "${UCODE_INSTALL_MSG}"
 	sleep 1
 	clear
@@ -274,55 +297,7 @@ base_os_install() {
 	rm ${HOLO_INSTALL_DIR}/etc/skel/Desktop/*
     arch-chroot ${HOLO_INSTALL_DIR} rm /etc/sddm.conf.d/* 
 	mv /etc/holoinstall/post_install_shortcuts/steam.desktop /etc/holoinstall/post_install_shortcuts/desktopshortcuts.desktop ${HOLO_INSTALL_DIR}/etc/xdg/autostart
-    mv /etc/holoinstall/post_install_shortcuts/steamos-gamemode.desktop ${HOLO_INSTALL_DIR}/etc/skel/Desktop
-
-	# Setup password for root
-	while true; do
-		ROOTPASS=$(zenity --forms --title="Account configuration" --text="Set root/system administrator password" --add-password="Password for user root")
-		if [ -z $ROOTPASS ]; then
-			zenity --warning --text "No password was set for user \"root\"!" --width=300
-			break
-		fi
-		echo
-		ROOTPASS_CONF=$(zenity --forms --title="Account configuration" --text="Confirm your root password" --add-password="Password for user root")
-		echo
-		if [ $ROOTPASS = $ROOTPASS_CONF ]; then
-			break
-		fi
-		zenity --warning --text "Passwords not match." --width=300
-	done
-	# Create user
-	NAME_REGEX="^[a-z][-a-z0-9_]*\$"
-	while true; do
-		HOLOUSER=$(zenity --entry --title="Account creation" --text "Enter username for this installation:")
-		if [ $HOLOUSER = "root" ]; then
-			zenity --warning --text "User root already exists." --width=300
-		elif [ -z $HOLOUSER ]; then
-			zenity --warning --text "Please create a user!" --width=300
-		elif [ ${#HOLOUSER} -gt 32 ]; then
-			zenity --warning --text "Username length must not exceed 32 characters!" --width=400
-		elif [[ ! $HOLOUSER =~ $NAME_REGEX ]]; then
-			zenity --warning --text "Invalid username \"$HOLOUSER\"\nUsername needs to follow these rules:\n\n- Must start with a lowercase letter.\n- May only contain lowercase letters, digits, hyphens, and underscores." --width=500
-		else
-			break
-		fi
-	done
-	# Setup password for user
-	while true; do
-		HOLOPASS=$(zenity --forms --title="Account configuration" --text="Set password for $HOLOUSER" --add-password="Password for user $HOLOUSER")
-		echo
-		HOLOPASS_CONF=$(zenity --forms --title="Account configuration" --text="Confirm password for $HOLOUSER" --add-password="Password for user $HOLOUSER")
-		echo
-		if [ -z $HOLOPASS ]; then
-			zenity --warning --text "Please type password for user \"$HOLOUSER\"!" --width=300
-			HOLOPASS_CONF=unmatched
-		fi
-		if [ $HOLOPASS = $HOLOPASS_CONF ]; then
-			break
-		fi
-		zenity --warning --text "Passwords do not match." --width=300
-	done
-	
+    mv /etc/holoinstall/post_install_shortcuts/steamos-gamemode.desktop ${HOLO_INSTALL_DIR}/etc/skel/Desktop	
 	echo "\nCreating user ${HOLOUSER}..."
 	echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
