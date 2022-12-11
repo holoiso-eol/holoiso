@@ -52,7 +52,9 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	fi
 	echo "\nChoose your partitioning type:"
 	install=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Erase entire drive" \2 "Install alongside existing OS/Partition (Requires at least 50 GB of free space from the end)"  --width=700 --height=220)
-
+	if [[ -n "$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" ]]; then
+		HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="A HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
+	fi
 	case $install in
 		1)
 			destructive=true
@@ -160,17 +162,16 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	btrfs filesystem label ${root_partition} holo-root
 	if [ $home ]; then
 		if [[ -n "$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" ]]; then
-			HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="A HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
 				if [[ "${HOME_REUSE_TYPE}" == "1" ]]; then
 					mkfs -t ext4 -F -O casefold ${INSTALLDEVICE}${homePartNum}
 					home_partition="${INSTALLDEVICE}${homePartNum}"
 					e2label "${INSTALLDEVICE}${homePartNum}" holo-home
 				elif [[ "${HOME_REUSE_TYPE}" == "2" ]]; then
 					echo "Home partition will be reused at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)"
-                    home_partition="${INSTALLDEVICE}${homePartNum}"
+                    home_partition="$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)"
 				fi
 		else
-			mkfs -t ext4 -O casefold ${INSTALLDEVICE}${homePartNum}
+			mkfs -t ext4 -F -O casefold ${INSTALLDEVICE}${homePartNum}
 			home_partition="${INSTALLDEVICE}${homePartNum}"
 			e2label "${INSTALLDEVICE}${homePartNum}" holo-home
 		fi
