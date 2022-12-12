@@ -275,7 +275,8 @@ base_os_install() {
 		check_mount $? home
 	fi
     rsync -axHAWXS --numeric-ids --info=progress2 --no-inc-recursive / ${HOLO_INSTALL_DIR} |    tr '\r' '\n' |    awk '/^ / { print int(+$2) ; next } $0 { print "# " $0 }' | zenity --progress --title="Installing base OS..." --text="Bootstrapping root filesystem...\nThis may take more than 10 minutes.\n" --width=500 --no-cancel --auto-close
-	arch-chroot ${HOLO_INSTALL_DIR} install -Dm644 "$(find /usr/lib | grep vmlinuz | grep neptune)" "/boot/vmlinuz-$(cat /usr/lib/modules/*neptune*/pkgbase)"
+	arch-chroot ${HOLO_INSTALL_DIR} install -Dm644 "$(find /usr/lib | grep vmlinuz | grep neptune/)" "/boot/vmlinuz-$(cat /usr/lib/modules/*neptune/pkgbase)"
+	arch-chroot ${HOLO_INSTALL_DIR} install -Dm644 "$(find /usr/lib | grep vmlinuz | grep neptune-60)" "/boot/vmlinuz-$(cat /usr/lib/modules/*neptune-60/pkgbase)"
 	cp -r /etc/holoinstall/post_install/pacman.conf ${HOLO_INSTALL_DIR}/etc/pacman.conf
 	arch-chroot ${HOLO_INSTALL_DIR} pacman-key --init
     arch-chroot ${HOLO_INSTALL_DIR} pacman -Rdd --noconfirm mkinitcpio-archiso

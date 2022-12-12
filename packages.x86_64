@@ -46,6 +46,8 @@ libfido2
 libusb-compat
 linux-neptune
 linux-neptune-headers
+linux-neptune-60
+linux-neptune-60-headers
 linux-atm
 linux-firmware
 linux-firmware-marvell
