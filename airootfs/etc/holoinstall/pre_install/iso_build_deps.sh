@@ -34,7 +34,6 @@ pacman -Sy
 # Install desktop suite
 pacman -Rcns --noconfirm pulseaudio xfce4-pulseaudio-plugin pulseaudio-alsa
 pacman -Rdd --noconfirm sddm linux syslinux
-echo -e "y\ny" | pacman -S jupiter-hw-support
 pacman --overwrite="*" --noconfirm -S holoiso-main
 mv /etc/pacman.conf /etc/pacold
 cp /etc/holoinstall/post_install/pacman.conf /etc/pacman.conf
