@@ -1,16 +1,16 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=sudo rm /etc/skel/Desktop/Return.desktop
+Exec=sudo /etc/holoinstall/post_install/chroot_holoiso.sh
 GenericName[en_US]=
 GenericName=
-Icon=system-reboot
+Icon=run-install
 MimeType=
-Name[en_US]=kys
-Name=kys
+Name[en_US]=Chroot to valid HoloISO Installation
+Name=Opens terminal window with mounted HoloISO partitions
 Path=
 StartupNotify=true
-Terminal=false
+Terminal=true
 TerminalOptions=
 Type=Application
 X-DBUS-ServiceName=
