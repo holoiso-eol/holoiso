@@ -7,6 +7,7 @@ GenericName=
 Icon=input-keyboard-symbolic
 MimeType=
 Name[en_US]=Show on-screen keyboard
+Name[zh_CN]=打开屏幕键盘
 Name=Show on-screen keyboard
 Path=
 StartupNotify=true
