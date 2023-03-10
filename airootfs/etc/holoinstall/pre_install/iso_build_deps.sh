@@ -46,16 +46,18 @@ systemctl enable sddm NetworkManager systemd-timesyncd cups bluetooth sshd
 
 # Download extra stuff
 mkdir -p /etc/holoinstall/post_install/pkgs
-wget https://gdrivecdn.thevakhovske.pw/6:/holostaging/os/x86_64/linux-holoiso-5.18.1.holoiso20220606.1822-1-x86_64.pkg.tar.zst -P /etc/holoinstall/post_install/pkgs
-wget https://gdrivecdn.thevakhovske.pw/6:/holostaging/os/x86_64/linux-holoiso-headers-5.18.1.holoiso20220606.1822-1-x86_64.pkg.tar.zst -P /etc/holoinstall/post_install/pkgs
 wget $(pacman -Sp win600-xpad-dkms) -P /etc/holoinstall/post_install/pkgs_addon
 wget $(pacman -Sp linux-firmware-neptune) -P /etc/holoinstall/post_install/pkgs_addon
+
+# Download Kernels
+wget $(pacman -Sp linux-neptune-61) -P /etc/holoinstall/post_install/pkgs
+wget $(pacman -Sp linux-neptune-61-headers) -P /etc/holoinstall/post_install/pkgs
 
 # Workaround mkinitcpio bullshit so that i don't KMS after rebuilding ISO each time and having users reinstalling their fucking OS bullshit every goddamn time.
 rm /etc/mkinitcpio.conf
 mv /etc/mkinitcpio.conf.pacnew /etc/mkinitcpio.conf 
 rm /etc/mkinitcpio.d/* # This removes shitty unasked presets so that this thing can't overwrite it next time
-cp /etc/holoinstall/post_install/mkinitcpio_presets/linux-neptune.preset /etc/mkinitcpio.d/ # Yes. I'm lazy to use mkinitcpio-install. Problems? *gigachad posture*
+mkdir -p /etc/mkinitcpio.d
 
 # Remove this shit from post-build
 rm -rf /etc/holoinstall/pre_install
