@@ -315,7 +315,7 @@ base_os_install() {
 	mount -t vfat ${efi_partition} ${HOLO_INSTALL_DIR}/boot/efi
 	arch-chroot ${HOLO_INSTALL_DIR} holoiso-grub-update
 	mount -o remount,rw -t efivarfs efivarfs /sys/firmware/efi/efivars
-	arch-chroot ${HOLO_INSTALL_DIR} efibootmgr -c -d ${efi_partition} -p 2 -L "GRUB on HoloISO" -l '\EFI\BOOT\BOOTX64.efi'
+	arch-chroot ${HOLO_INSTALL_DIR} efibootmgr -c -d ${DEVICE} -p ${efiPartNum} -L "HoloISO" -l '\EFI\BOOT\BOOTX64.efi'
 	sleep 1
 	clear
 }
