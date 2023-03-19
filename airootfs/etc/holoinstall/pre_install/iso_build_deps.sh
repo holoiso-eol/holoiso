@@ -59,6 +59,9 @@ mv /etc/mkinitcpio.conf.pacnew /etc/mkinitcpio.conf
 rm /etc/mkinitcpio.d/* # This removes shitty unasked presets so that this thing can't overwrite it next time
 mkdir -p /etc/mkinitcpio.d
 
+# New HWSupport test packages
+pacman -Syu --noconfirm mesa lib32-mesa lib32-vulkan-intel lib32-vulkan-radeon vulkan-intel vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver --config /etc/holoinstall/pre_install/testpacman.conf
+
 # Remove this shit from post-build
 rm -rf /etc/holoinstall/pre_install
 rm /etc/pacman.conf
