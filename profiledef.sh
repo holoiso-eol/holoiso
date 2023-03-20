@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
-iso_name="HoloISO_4.2_6.1_plus_mesa23-test"
+iso_name="HoloISO_4.2_$(git rev-parse --abbrev-ref HEAD)"
 iso_label="HOLO_$(date +%Y%m)"
 iso_publisher="theVakhovske <https://github.com/theVakhovskeIsTaken>"
 iso_application="HoloISO Installer Image"
-iso_version="$(date +%Y%m%d_%H%M)_$(echo $RANDOM | md5sum | head -c 10; echo;)-preview"
+iso_version="$(date +%Y%m%d_%H%M)_$(echo $RANDOM | md5sum | head -c 10; echo;)$(cat /tmp/buildbranch_holoiso)"
 install_dir="arch"
 buildmodes=('iso')
 bootmodes=('uefi-x64.systemd-boot.esp' 'uefi-x64.systemd-boot.eltorito')
