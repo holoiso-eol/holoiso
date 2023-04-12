@@ -47,24 +47,29 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	lsblk $DEVICE | head -n2 | tail -n1 | grep disk > /dev/null 2>&1
 	if [ $? != 0 ]; then
 		echo "$DEVICE is not disk type! Installation Aborted!"
-		echo "\nNote: If you wish to preform partition install.\nPlease specify the disk drive node first then select \"2\" for partition install."
+		echo "\nNote: If you wish to perform partitioned installation,\nPlease specify the disk drive node first then select \"2\" for partition install."
 		exit 1
 	fi
 	echo "\nChoose your partitioning type:"
 	install=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Erase entire drive" \2 "Install alongside existing OS/Partition (Requires at least 50 GB of free space from the end)"  --width=700 --height=220)
 	if [[ -n "$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" ]]; then
-		HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="A HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
+		HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
 		mkdir -p /tmp/home
 		mount $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1) /tmp/home
+		mkdir -p /tmp/rootpart
+		mount $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1) /tmp/rootpart
 			if [[ -d "/tmp/home/.steamos" ]]; then
 				echo "Migration data found. Proceeding"
 				umount -l $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)
+				HOLOUSER=$(cat /tmp/rootpart/etc/passwd | grep home | cut -d ':' -f 1)
+				MIGRATEDINSTALL="1"
+				umount -l $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1)
 			else
 					(
 					sleep 2
 					echo "10"
-					mkdir -p /tmp/rootpart
-					mount $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1) /tmp/rootpart
+					HOLOUSER=$(cat /tmp/rootpart/etc/passwd | grep home | cut -d ':' -f 1)
+					MIGRATEDINSTALL="1"
 					mkdir -p /tmp/home/.steamos/ /tmp/home/.steamos/offload/opt /tmp/home/.steamos/offload/root /tmp/home/.steamos/offload/srv /tmp/home/.steamos/offload/usr/lib/debug /tmp/home/.steamos/offload/usr/local /tmp/home/.steamos/offload/var/lib/flatpak /tmp/home/.steamos/offload/var/cache/pacman /tmp/home/.steamos/offload/var/lib/docker /tmp/home/.steamos/offload/var/lib/systemd/coredump /tmp/home/.steamos/offload/var/log /tmp/home/.steamos/offload/var/tmp
 					echo "15" ; sleep 1
 					mv /tmp/rootpart/opt/* /tmp/home/.steamos/offload/opt
@@ -83,7 +88,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 					rsync -axHAWXS --numeric-ids --info=progress2 --no-inc-recursive /tmp/rootpart/var/lib/flatpak /tmp/home/.steamos/offload/var/lib/ |    tr '\r' '\n' |    awk '/^ / { print int(+$2) ; next } $0 { print "# " $0 }'
 					echo "Finished."
 					) |
-					zenity --progress --title="Preparing to reuse home at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" --text="Starting to move following directories to target offload:\n\n- /opt\n- /root\n- /srv\n- /usr/lib/debug\n- /usr/local\n- /var/cache/pacman\n- /var/lib/docker\n- /var/lib/systemd/coredump\n- /var/log\n- /var/tmp\n" --width=500 --no-cancel --percentage=0 --auto-close
+					zenity --progress --title="Preparing to reuse home at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" --text="Your installation will reuse following user: ${HOLOUSER} \n\nStarting to move following directories to target offload:\n\n- /opt\n- /root\n- /srv\n- /usr/lib/debug\n- /usr/local\n- /var/cache/pacman\n- /var/lib/docker\n- /var/lib/systemd/coredump\n- /var/log\n- /var/tmp\n" --width=500 --no-cancel --percentage=0 --auto-close
 					umount -l $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)
 					umount -l $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1)
 				fi
@@ -105,6 +110,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	done
 	# Create user
 	NAME_REGEX="^[a-z][-a-z0-9_]*\$"
+	if [ -z $MIGRATEDINSTALL ]; then
 	while true; do
 		HOLOUSER=$(zenity --entry --title="Account creation" --text "Enter username for this installation:")
 		if [ $HOLOUSER = "root" ]; then
@@ -119,6 +125,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 			break
 		fi
 	done
+	fi
 	# Setup password for user
 	while true; do
 		HOLOPASS=$(zenity --forms --title="Account configuration" --text="Set password for $HOLOUSER" --add-password="Password for user $HOLOUSER")
