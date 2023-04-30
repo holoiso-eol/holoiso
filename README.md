@@ -59,6 +59,14 @@ Installation process:
 - Follow on-screen instructions
 - Take your favourite hot beverage, and wait 'till it installs :3
 
+**Sudo or root password during installation**
+
+In some cases, you may be prompted for the sudo or root password during the installation process (for example when applying your own partitioning), but the sudo password is not set at this point. To set it, follow these steps
+- Open the terminal
+- Type in `sudo -i`
+- Type in `passwd liveuser` and follow the instructions on screen to set the sudo password
+- Type in `passwd` and follow the instructions on the screen again to set the root password
+
 Upon booting, you'll be greeted with Steam Deck's OOBE screen, from where you'll connect to your network, and login to your Steam account, from there, you can exit to KDE Plasma seamlessly by choosing *Switch to desktop* in the power menu, [like so](https://www.youtube.com/watch?v=smfwna2iHho).
 
 Screenshots:
