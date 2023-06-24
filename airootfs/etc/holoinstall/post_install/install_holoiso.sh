@@ -233,7 +233,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	# If the available storage is less than 64GB, don't create /home.
 	# If the boot device is mmcblk0, don't create an ext4 partition or it will break steamOS versions
 	# released after May 20.
-	if [ $diskSpace -lt 64000000 ] || [[ "${DEVICE}" =~ mmcblk0 ]]; then
+	if [[ "${DEVICE}" =~ mmcblk0 ]]; then
 		parted ${DEVICE} mkpart primary btrfs ${rootStart}M 100%
 	else
 		parted ${DEVICE} mkpart primary btrfs ${rootStart}M ${rootEnd}M
