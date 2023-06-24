@@ -52,15 +52,16 @@ wget $(pacman -Sp linux-firmware-neptune) -P /etc/holoinstall/post_install/pkgs_
 # Download Kernels
 wget $(pacman -Sp linux-neptune-61) -P /etc/holoinstall/post_install/pkgs
 wget $(pacman -Sp linux-neptune-61-headers) -P /etc/holoinstall/post_install/pkgs
+wget $(pacman -Sp linux-neptune) -P /etc/holoinstall/post_install/pkgs
+wget $(pacman -Sp linux-neptune-headers) -P /etc/holoinstall/post_install/pkgs
+wget $(pacman -Sp linux-lts) -P /etc/holoinstall/post_install/pkgs
+wget $(pacman -Sp linux-lts) -P /etc/holoinstall/post_install/pkgs
 
 # Workaround mkinitcpio bullshit so that i don't KMS after rebuilding ISO each time and having users reinstalling their fucking OS bullshit every goddamn time.
 rm /etc/mkinitcpio.conf
 mv /etc/mkinitcpio.conf.pacnew /etc/mkinitcpio.conf 
 rm /etc/mkinitcpio.d/* # This removes shitty unasked presets so that this thing can't overwrite it next time
 mkdir -p /etc/mkinitcpio.d
-
-# New HWSupport test packages
-pacman -Syu --noconfirm mesa lib32-mesa lib32-vulkan-intel lib32-vulkan-radeon vulkan-intel vulkan-radeon libva-mesa-driver lib32-libva-mesa-driver --config /etc/holoinstall/pre_install/testpacman.conf
 
 # Remove this shit from post-build
 rm -rf /etc/holoinstall/pre_install
