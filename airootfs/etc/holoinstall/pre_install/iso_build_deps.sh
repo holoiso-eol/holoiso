@@ -50,10 +50,7 @@ mkdir -p /etc/holoinstall/post_install/kernels
 wget $(pacman -Sp win600-xpad-dkms) -P /etc/holoinstall/post_install/pkgs_addon
 wget $(pacman -Sp linux-firmware-neptune) -P /etc/holoinstall/post_install/pkgs_addon
 
-kernels=$(cat /etc/holoinstall/post_install/kernel_list.bootstrap)
-
-# Download Kernels
-for kernel in $kernels
+for kernel in $(cat /etc/holoinstall/post_install/kernel_list.bootstrap)
 do
     wget $(pacman -Sp $kernel) -P /etc/holoinstall/post_install/kernels
 done
