@@ -327,14 +327,15 @@ base_os_install() {
 	clear
 }
 full_install() {
-	if [[ "${GAMEPAD_DRV}" == "1" ]]; then
-		echo "You're running this on Anbernic Win600. A suitable gamepad driver will be installed."
-		arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs_addon | grep win600-xpad-dkms)
-	fi
 	if [[ "${FIRMWARE_INSTALL}" == "1" ]]; then
 		echo "You're running this on a Steam Deck. linux-firmware-neptune will be installed to ensure maximum kernel-side compatibility."
 		arch-chroot ${HOLO_INSTALL_DIR} pacman -Rdd --noconfirm linux-firmware
 		arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs_addon | grep linux-firmware-neptune)
+		arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
+	fi
+	if [[ -n "$(lspci -nn | grep -i vga | grep -Po "10de:[a-z0-9]{4}")" ]]; then
+		echo "NVIDIA GPU detected. Installing NVIDIA Drivers."
+		arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs/nv | grep pkg.tar.zst)
 		arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
 	fi
 	echo "\nConfiguring Steam Deck UI by default..."		
