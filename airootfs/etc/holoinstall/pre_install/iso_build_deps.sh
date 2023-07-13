@@ -35,6 +35,8 @@ pacman -Sy
 pacman -Rcns --noconfirm pulseaudio xfce4-pulseaudio-plugin pulseaudio-alsa
 pacman -Rdd --noconfirm sddm linux syslinux xorg-xwayland
 pacman --overwrite="*" --noconfirm -S holoiso-main
+mkdir -p /var/cache/pacman/
+mv /.steamos/offload/var/cache/pacman/pkg /var/cache/pacman/
 mv /etc/pacman.conf /etc/pacold
 cp /etc/holoinstall/post_install/pacman.conf /etc/pacman.conf
 pacman --overwrite="*" --noconfirm -S holoiso-updateclient wireplumber flatpak packagekit-qt5 rsync unzip sddm-wayland dkms steam-im-modules systemd-swap ttf-twemoji-default ttf-hack ttf-dejavu pkgconf pavucontrol partitionmanager gamemode lib32-gamemode cpupower bluez-plugins bluez-utils
@@ -52,7 +54,7 @@ wget $(pacman -Sp linux-firmware-neptune) -P /etc/holoinstall/post_install/pkgs_
 
 for kernel in $(cat /etc/holoinstall/post_install/kernel_list.bootstrap)
 do
-    wget $(pacman -Sp $kernel) -P /etc/holoinstall/post_install/kernels
+    cp $(pacman -Sp $kernel | cut -c8-) /etc/holoinstall/post_install/kernels
 done
 
 # Workaround mkinitcpio bullshit so that i don't KMS after rebuilding ISO each time and having users reinstalling their fucking OS bullshit every goddamn time.
@@ -65,4 +67,3 @@ mkdir -p /etc/mkinitcpio.d
 rm -rf /etc/holoinstall/pre_install
 rm /etc/pacman.conf
 mv /etc/pacold /etc/pacman.conf
-rm /home/.steamos/offload/var/cache/pacman/pkg/*
