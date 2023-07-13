@@ -67,3 +67,4 @@ mkdir -p /etc/mkinitcpio.d
 rm -rf /etc/holoinstall/pre_install
 rm /etc/pacman.conf
 mv /etc/pacold /etc/pacman.conf
+rm /usr/bin/jupiter-plasma-bootstrap
