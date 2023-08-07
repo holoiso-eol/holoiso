@@ -39,7 +39,7 @@ pacman --overwrite="*" --noconfirm -S holoiso-updateclient wireplumber flatpak p
 mv /etc/xdg/autostart/steam.desktop /etc/xdg/autostart/desktopshortcuts.desktop /etc/skel/Desktop/steamos-gamemode.desktop /etc/holoinstall/post_install_shortcuts
 pacman --noconfirm -S base-devel
 sed -i 's/base udev modconf/base udev plymouth modconf/g' /etc/mkinitcpio.conf
-pacman --overwrite="*" --noconfirm -S extra-main/mesa extra-main/vulkan-radeon extra-main/vulkan-intel multilib-main/lib32-mesa multilib-main/lib32-vulkan-radeon multilib-main/lib32-vulkan-intel
+pacman --overwrite="*" --noconfirm -S handygccs-git extra-main/mesa extra-main/vulkan-radeon extra-main/vulkan-intel multilib-main/lib32-mesa multilib-main/lib32-vulkan-radeon multilib-main/lib32-vulkan-intel
 plymouth-set-default-theme -R steamos
 mkinitcpio -P
 
@@ -66,6 +66,7 @@ wget $(pacman -Sp multilib-main/lib32-opencl-nvidia) -P /etc/holoinstall/post_in
 wget $(pacman -Sp extra-main/nvtop) -P /etc/holoinstall/post_install/pkgs/nv
 wget $(pacman -Sp extra-main/nvidia-settings) -P /etc/holoinstall/post_install/pkgs/nv
 wget $(pacman -Sp extra-main/nvidia-prime) -P /etc/holoinstall/post_install/pkgs/nv
+rm -rf /etc/holoinstall/post_install/pkgs/nv/*.zst.* && rm -rf /etc/holoinstall/post_install/pkgs/nv/*515*
 
 # Workaround mkinitcpio bullshit so that i don't KMS after rebuilding ISO each time and having users reinstalling their fucking OS bullshit every goddamn time.
 rm /etc/mkinitcpio.conf
