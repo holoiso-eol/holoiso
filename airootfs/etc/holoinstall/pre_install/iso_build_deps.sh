@@ -1,19 +1,25 @@
 #!/bin/zsh
 # Prepares ISO for packaging
 
-# Remove useless shortcuts for now
-mkdir /etc/holoinstall/post_install_shortcuts
-mv /etc/skel/Desktop/Return.desktop /etc/holoinstall/post_install_shortcuts
-
 # Prepare thyself
 chmod +x /etc/holoinstall/post_install/install_holoiso.sh
 chmod +x /etc/holoinstall/post_install/chroot_holoiso.sh
 chmod +x /etc/skel/Desktop/install.desktop
 chmod 755 /etc/skel/Desktop/install.desktop
+# Begin coreOS bootstrapping below:
 
-# Remove stupid stuff on build
-rm /home/${LIVEOSUSER}/steam.desktop
+# Init pacman keys
+pacman-key --init
+pacman -Sy
 
+# Install desktop suite
+pacman -Rcns --noconfirm pulseaudio xfce4-pulseaudio-plugin pulseaudio-alsa
+pacman -Rdd --noconfirm sddm syslinux xorg-xwayland
+pacman --overwrite="*" --noconfirm -S holoiso-main
+
+# Remove useless shortcuts for now
+mkdir /etc/holoinstall/post_install_shortcuts
+mv /etc/skel/Desktop/Return.desktop /etc/holoinstall/post_install_shortcuts
 # Add a liveOS user
 ROOTPASS="holoconfig"
 LIVEOSUSER="liveuser"
@@ -25,16 +31,6 @@ echo "${LIVEOSUSER} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${LIVEOSUSER}
 chmod 0440 /etc/sudoers.d/${LIVEOSUSER}
 usermod -a -G rfkill ${LIVEOSUSER}
 usermod -a -G wheel ${LIVEOSUSER}
-# Begin coreOS bootstrapping below:
-
-# Init pacman keys
-pacman-key --init
-pacman -Sy
-
-# Install desktop suite
-pacman -Rcns --noconfirm pulseaudio xfce4-pulseaudio-plugin pulseaudio-alsa
-pacman -Rdd --noconfirm sddm syslinux xorg-xwayland
-pacman --overwrite="*" --noconfirm -S holoiso-main
 mkdir -p /var/cache/pacman/
 mv /.steamos/offload/var/cache/pacman/pkg /var/cache/pacman/
 mv /etc/pacman.conf /etc/pacold
@@ -43,6 +39,8 @@ pacman --overwrite="*" --noconfirm -S holoiso-updateclient wireplumber flatpak p
 mv /etc/xdg/autostart/steam.desktop /etc/xdg/autostart/desktopshortcuts.desktop /etc/skel/Desktop/steamos-gamemode.desktop /etc/holoinstall/post_install_shortcuts
 pacman --noconfirm -S base-devel
 sed -i 's/base udev modconf/base udev plymouth modconf/g' /etc/mkinitcpio.conf
+pacman --overwrite="*" --noconfirm -S extra-main/mesa extra-main/vulkan-radeon extra-main/vulkan-intel multilib-main/lib32-mesa multilib-main/lib32-vulkan-radeon multilib-main/lib32-vulkan-intel
+plymouth-set-default-theme -R steamos
 mkinitcpio -P
 
 # Enable stuff
@@ -79,7 +77,5 @@ mkdir -p /etc/mkinitcpio.d
 rm -rf /etc/holoinstall/pre_install
 rm /etc/pacman.conf
 mv /etc/pacold /etc/pacman.conf
-rm /usr/bin/jupiter-plasma-bootstrap
-rm /etc/X11/Xsession.d/50rotate-screen
-rm /etc/xdg/powermanagementprofilesrc
+rm -rf /etc/xdg/powermanagementprofilesrc
 systemctl disable qemu-guest-agent
