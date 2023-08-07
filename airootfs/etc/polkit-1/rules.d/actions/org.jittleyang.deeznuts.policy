@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+
+  <vendor>HoloISO</vendor>
+  <vendor_url>https://github.com/HoloISO/holoiso</vendor_url>
+
+  <action id="org.jittleyang.deeznuts.desktop">
+    <description>Allow firstboot configuration to do it's thing</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/holoiso-firstboot-config</annotate>
+  </action>
+
+  <action id="org.jittleyang.deeznuts.grub">
+    <description>Allow GRUB updater to run</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/holoiso-grub-update</annotate>
+  </action>
+
+  <action id="org.jittleyang.deeznuts.ens">
+    <description>Allow enabling sessions</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/holoiso-enable-sessions</annotate>
+  </action>
+
+  <action id="org.jittleyang.deeznuts.dns">
+    <description>Allow disabling sessions</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/holoiso-disable-sessions</annotate>
+  </action>
+</policyconfig>
+
