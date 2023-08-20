@@ -117,6 +117,7 @@ xl2tpd
 zsh
 
 # GUI
+holo-keyring
 plasma
 plasma-nm
 plasma-meta

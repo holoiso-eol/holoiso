@@ -45,29 +45,30 @@ plymouth-set-default-theme -R steamos
 mkinitcpio -P
 
 # Enable stuff
-systemctl enable sddm NetworkManager systemd-timesyncd cups bluetooth sshd
+systemctl enable sddm NetworkManager systemd-timesyncd bluetooth sshd
 
 # Download extra stuff
-mkdir -p /etc/holoinstall/post_install/pkgs/nv
+# mkdir -p /etc/holoinstall/post_install/pkgs/nv
 mkdir -p /etc/holoinstall/post_install/kernels
 wget $(pacman -Sp linux-firmware-neptune) -P /etc/holoinstall/post_install/pkgs_addon
+wget $(pacman -Sp win600-xpad-dkms) -P /etc/holoinstall/post_install/pkgs_addon
 
 for kernel in $(cat /etc/holoinstall/post_install/kernel_list.bootstrap)
 do
     cp $(pacman -Sp $kernel | cut -c8-) /etc/holoinstall/post_install/kernels
 done
 
-wget $(pacman -Sp extra-main/nvidia-dkms) -P /etc/holoinstall/post_install/pkgs/nv
-wget $(pacman -Sp extra-main/nvidia-utils) -P /etc/holoinstall/post_install/pkgs/nv
-wget $(pacman -Sp multilib-main/lib32-nvidia-utils) -P /etc/holoinstall/post_install/pkgs/nv
-wget $(pacman -Sp egl-wayland) -P /etc/holoinstall/post_install/pkgs/nv
-wget $(pacman -Sp egl-external-platform) -P /etc/holoinstall/post_install/pkgs/nv
-wget $(pacman -Sp extra-main/opencl-nvidia) -P /etc/holoinstall/post_install/pkgs/nv
-wget $(pacman -Sp multilib-main/lib32-opencl-nvidia) -P /etc/holoinstall/post_install/pkgs/nv
-wget $(pacman -Sp extra-main/nvtop) -P /etc/holoinstall/post_install/pkgs/nv
-wget $(pacman -Sp extra-main/nvidia-settings) -P /etc/holoinstall/post_install/pkgs/nv
-wget $(pacman -Sp extra-main/nvidia-prime) -P /etc/holoinstall/post_install/pkgs/nv
-rm -rf /etc/holoinstall/post_install/pkgs/nv/*.zst.* && rm -rf /etc/holoinstall/post_install/pkgs/nv/*515*
+# wget $(pacman -Sp extra-main/nvidia-dkms) -P /etc/holoinstall/post_install/pkgs/nv
+# wget $(pacman -Sp extra-main/nvidia-utils) -P /etc/holoinstall/post_install/pkgs/nv
+# wget $(pacman -Sp multilib-main/lib32-nvidia-utils) -P /etc/holoinstall/post_install/pkgs/nv
+# wget $(pacman -Sp egl-wayland) -P /etc/holoinstall/post_install/pkgs/nv
+# wget $(pacman -Sp egl-external-platform) -P /etc/holoinstall/post_install/pkgs/nv
+# wget $(pacman -Sp extra-main/opencl-nvidia) -P /etc/holoinstall/post_install/pkgs/nv
+# wget $(pacman -Sp multilib-main/lib32-opencl-nvidia) -P /etc/holoinstall/post_install/pkgs/nv
+# wget $(pacman -Sp extra-main/nvtop) -P /etc/holoinstall/post_install/pkgs/nv
+# wget $(pacman -Sp extra-main/nvidia-settings) -P /etc/holoinstall/post_install/pkgs/nv
+# wget $(pacman -Sp extra-main/nvidia-prime) -P /etc/holoinstall/post_install/pkgs/nv
+# rm -rf /etc/holoinstall/post_install/pkgs/nv/*.zst.* && rm -rf /etc/holoinstall/post_install/pkgs/nv/*515*
 
 # Workaround mkinitcpio bullshit so that i don't KMS after rebuilding ISO each time and having users reinstalling their fucking OS bullshit every goddamn time.
 rm /etc/mkinitcpio.conf
@@ -80,4 +81,6 @@ rm -rf /etc/holoinstall/pre_install
 rm /etc/pacman.conf
 mv /etc/pacold /etc/pacman.conf
 rm -rf /etc/xdg/powermanagementprofilesrc
+rm -rf /home/liveuser/Desktop/steamos-gamemode.desktop
+rm -rf /home/liveuser/Desktop/Return.desktop
 systemctl disable qemu-guest-agent

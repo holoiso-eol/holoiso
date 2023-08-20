@@ -51,9 +51,10 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 		exit 1
 	fi
 	echo "\nChoose your partitioning type:"
-	install=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Erase entire drive" \2 "Install alongside existing OS/Partition (Requires at least 50 GB of free space from the end)"  --width=700 --height=220)
+	install=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Erase entire drive" \2 "Install alongside existing OS/Partition (Requires at least 50 GB of FREE and UNFORMATTED space from the end)"  --width=700 --height=220)
 	if [[ -n "$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" ]]; then
 		HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
+		if [[ "$HOME_REUSE_TYPE" == "2"]]; then
 		mkdir -p /tmp/home
 		mount $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1) /tmp/home
 		mkdir -p /tmp/rootpart
@@ -92,6 +93,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 					umount -l $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)
 					umount -l $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1)
 				fi
+		fi
 	fi
 	# Setup password for root
 	while true; do
@@ -110,7 +112,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	done
 	# Create user
 	NAME_REGEX="^[a-z][-a-z0-9_]*\$"
-	if [ -z $MIGRATEDINSTALL ]; then
+	if [[ "$MIGRATEDINSTALL" -ne "1" ]]; then
 	while true; do
 		HOLOUSER=$(zenity --entry --title="Account creation" --text "Enter username for this installation:")
 		if [ $HOLOUSER = "root" ]; then
@@ -311,11 +313,11 @@ base_os_install() {
 	echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
 	echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
-	echo "${HOLOUSER} ALL=(ALL:ALL) ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	echo "${HOLOUSER} ALL=(ALL) ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 	chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 	echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
 	sleep 1
-	clear
+	clear 
 
 	echo "\nInstalling bootloader..."
 	mkdir -p ${HOLO_INSTALL_DIR}/boot/efi
@@ -327,17 +329,25 @@ base_os_install() {
 	clear
 }
 full_install() {
+	if [[ "${GAMEPAD_DRV}" == "1" ]]; then
+		echo "You're running this on Anbernic Win600. A suitable gamepad driver will be installed."
+		arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs_addon | grep win600-xpad-dkms)
+	fi
 	if [[ "${FIRMWARE_INSTALL}" == "1" ]]; then
 		echo "You're running this on a Steam Deck. linux-firmware-neptune will be installed to ensure maximum kernel-side compatibility."
 		arch-chroot ${HOLO_INSTALL_DIR} pacman -Rdd --noconfirm linux-firmware
 		arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs_addon | grep linux-firmware-neptune)
 		arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
 	fi
-	if [[ -n "$(lspci -nn | grep -i vga | grep -Po "10de:[a-z0-9]{4}")" ]]; then
-		echo "NVIDIA GPU detected. Installing NVIDIA Drivers."
-		arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs/nv | grep pkg.tar.zst)
-		arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
-	fi
+
+	mv /etc/holoinstall/post_install/amd-perf-fix "${HOLO_INSTALL_DIR}"/usr/bin/amd-perf-fix
+	chmod +x "${HOLO_INSTALL_DIR}"/usr/bin/amd-perf-fix
+	
+	# if [[ -n "$(lspci -nn | grep -i vga | grep -Po "10de:[a-z0-9]{4}")" ]]; then
+	# 	echo "NVIDIA GPU detected. Installing NVIDIA Drivers."
+	# 	arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs/nv | grep pkg.tar.zst)
+	# 	arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
+	# fi
 	echo "\nConfiguring Steam Deck UI by default..."		
     ln -s /usr/share/applications/steam.desktop ${HOLO_INSTALL_DIR}/etc/skel/Desktop/steam.desktop
 	echo -e "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop\nRelogin=true\n\n[X11]\n# Janky workaround for wayland sessions not stopping in sddm, kills\n# all active sddm-helper sessions on teardown\nDisplayStopCommand=/usr/bin/gamescope-wayland-teardown-workaround" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
@@ -351,8 +361,19 @@ full_install() {
 	echo "Cleaning up..."
 	cp /etc/skel/.bashrc ${HOLO_INSTALL_DIR}/home/${HOLOUSER}
     arch-chroot ${HOLO_INSTALL_DIR} rm -rf /etc/holoinstall
+	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable amd-perf-fix
+	sudo rm -rf ${HOLO_INSTALL_DIR}/etc/sudoers.d/g_wheel
+	sudo rm -rf ${HOLO_INSTALL_DIR}/etc/sudoers.d/liveuser
 	sleep 1
 	clear
+	if zenity --question --text="Would you like to have a 2GB Swap?"
+	then 
+    	arch-chroot ${HOLO_INSTALL_DIR} dd if=/dev/zero of=/home/.steamos/swapfile bs=1M count=2k status=progress
+		arch-chroot ${HOLO_INSTALL_DIR} chmod 0600 /home/.steamos/swapfile
+		arch-chroot ${HOLO_INSTALL_DIR} mkswap -U clear /home/.steamos/swapfile
+		arch-chroot ${HOLO_INSTALL_DIR} swapon /home/.steamos/swapfile
+		arch-chroot ${HOLO_INSTALL_DIR} echo -e "/home/.steamos/swapfile none swap defaults 0 0" >> /etc/fstab
+	fi
 }
 
 
