@@ -44,11 +44,10 @@ less
 lftp
 libfido2
 libusb-compat
-linux-neptune
-linux-neptune-headers
 linux-atm
-linux-firmware
-linux-firmware-marvell
+core-main/linux-firmware
+core-main/linux-firmware-marvell
+core-main/linux-firmware-whence
 livecd-sounds
 lsscsi
 lvm2
@@ -118,10 +117,10 @@ xl2tpd
 zsh
 
 # GUI
+holo-keyring
 plasma
 plasma-nm
 plasma-meta
-steamdeck-kde-presets
 xorg-server
 vim
 xdg-user-dirs
@@ -140,4 +139,23 @@ dialog
 dolphin
 spectacle
 konsole
-rz608-fix-git
+# rz608-fix-git - Unrequired since we use LNX6+ for machines that include it
+
+# Another HoloISO addons -- BETA
+btop
+dos2unix
+gptfdisk
+iotop
+lib32-mesa-vdpau
+libva-mesa-driver
+mesa-vdpau
+okular
+opencl-mesa
+p7zip
+paru
+powertop
+steam_notif_daemon
+tk
+unrar
+xorg-xhost
+zip

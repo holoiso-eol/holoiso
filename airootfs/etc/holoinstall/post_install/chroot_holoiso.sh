@@ -2,7 +2,7 @@
 # Simple chrooter for stuff
 
 # Define mountpoint
-MOUNT_DIR=/tmp/mount
+MOUNT_DIR=/tmp/mount_chroot
 
 # Detect holo partitions
 ROOTPART=$(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1)
@@ -46,7 +46,7 @@ sudo mount ${EFIPART} ${MOUNT_DIR}/boot/efi
 echo "Your HoloISO Installation version: $(cat ${MOUNT_DIR}/etc/os-release | grep VARIANT_ID | cut -d '"' -f 2)\n"
 echo "Currently installed kernel versions: $(cat ${MOUNT_DIR}/usr/src/linux*/version)"
 echo "Most used commands:"
-echo "steamos-update [check|now] -- Checks for OS updates and applies them\nholoiso-[enable|disable]-sessions -- Disables session autologin\nholoiso-grub-update -- Reinstalls and updates grub configuration\n\nCommands available for logged-in user:\nsteamos-session-select [plasma|gamescope|plasma-x11-persistent] -- Select a session to boot into next time\n"
+echo "steamos-update [check|now] -- Checks for OS updates and applies them\nholoiso-[enable|disable]-sessions -- Disables session autologin\nholoiso-grub-update -- Reinstalls and updates grub configuration\n\nCommands available for logged-in user:\n"
 
 # Chroot!
 sudo arch-chroot ${MOUNT_DIR}

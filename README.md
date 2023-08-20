@@ -11,16 +11,31 @@ Main point of this project focuses in re-implementing proprietary (as in runs-on
 
 Click [here](https://t.me/HoloISO) to join **HoloISO** Telegram update channel;
 
-Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO** discussion on Steam Deck Community forums
-
 **Common Questions**
 
 - Is this official?
-> No, but it may as well be 99% of the way there. The code and packages, are straight from Valve, with zero possible edits, and the ISO is being built same rootfs bootstrap as all HoloISO installations run
+> No, but it may as well be 99% of the way there. Most of the code and packages, are straight from Valve, with zero possible edits, and the ISO is being built same rootfs bootstrap as all HoloISO installations run
 - I have an NVIDIA G-
 > No. Not even questionable. If you have an NVIDIA GPU, You're on your own. Latest Valve updates for Steam client including normal and Jupiter bootstraps have broken gamepadui on NVIDIA GPUs, and if so, no support will be provided for you.
 
+Hardware Support:
+-
+**CPU:**
+- Mostly all CPUs work fine. But people report inoperable experience on 7xxx series. (Should be working in later builds with linux-zen package included)
 
+**WLAN/PCIe additional cards:**
+- Any pre-2021 WLAN Card works fine on Valve's 5.13 Neptune kernel, but linux-zen provides support for ALL current cards
+
+**Sound:**
+- Everything mostly works fine(tm)
+
+**GPU:**
+- AMD GPUs with RADV support (Guaranteed to work fully stable. 7xxx requires testing)
+- NVIDIA GPUs (Unfunctional, but might work. No support will be provided to you, don't ask about it)
+- Intel GPUs (Random experience)
+
+Progress:
+-
 **Working stuff:**
 - Bootup
 - SteamOS OOBE (Steam Deck UI First Boot Experience)
@@ -37,7 +52,7 @@ Click [here](https://steamdeck.community/forums/holoiso.29/) to visit **HoloISO*
 
 **Working stuff on Steam Deck compared to other distributions:**
 - Dock Firmware updater (additionally installable in desktop by running sudo pacman -S jupiter-dock-updater-bin)
-- Steam Deck BIOS, Controller firmware, OS firmware updater
+- Steam Deck BIOS, Controller firmware, OS firmware updater, support for thumbstick and haptic motor calibration, native amplifier (CS35L41) support
 - New fan curve control
 - TDP/Clock control
 
@@ -48,12 +63,12 @@ Installation process:
 **Prerequistes:**
 - 4GB flash drive
 - More than 8 GB RAM if you plan to use "Copy-To-RAM" option to install
-- AMD GPU that supports RADV Drivers instead of Radeon (Southern Islands and Sea Islands require additional kernel cmdline property); Intel iGPU all the way up to 11th gen Iris Xe (Arc GPUs are not supported at this moment)
+- AMD GPU that supports RADV Drivers instead of Radeon (Southern Islands and Sea Islands require additional kernel cmdline property)
 - UEFI-enabled device
 - Disabled secure boot
 
 **Installation:**
-- Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) or [actions](https://nightly.link/theVakhovskeIsTaken/holoiso/workflows/build/stable/holoiso) for NVIDIA GPUs using [BalenaEtcher](https://www.balena.io/etcher/), [Rufus](https://rufus.ie) with DD mode, or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`, or by simply throwing ISO into Ventoy drive
+- Flash the ISO from [releases](https://github.com/bhaiest/holoiso/releases/latest) using [BalenaEtcher](https://www.balena.io/etcher/), [Rufus](https://rufus.ie) with DD mode, or by typing `sudo dd if=SteamOS.iso of=/dev/sd(your flash drive) bs=4M status=progress oflag=sync`, or by simply throwing ISO into Ventoy drive
 - Boot into ISO
 - Click on "Install SteamOS on this device"
 - Follow on-screen instructions
@@ -80,16 +95,3 @@ Notes:
 This configuration includes Valve's pacman.conf repositories, `holoinstall` script and `holoinstall` post-installation binaries.
 
 This configuration builds a *releng-based ISO*, which is the default Arch Linux redistribution flavor.
-
-Building the ISO:
--
-Trigger the build by executing:
-```
-pacman -Sy archiso
-git clone https://github.com/bhaiest/holoiso/
-mv holoiso/mkarchiso-holoiso /usr/bin
-chmod +x /usr/bin/mkarchiso-holoiso
-sudo mkarchiso-holoiso -v holoiso
-```
-Once it ends, your ISO will be available in the `out` folder.
-

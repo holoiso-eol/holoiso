@@ -47,24 +47,30 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	lsblk $DEVICE | head -n2 | tail -n1 | grep disk > /dev/null 2>&1
 	if [ $? != 0 ]; then
 		echo "$DEVICE is not disk type! Installation Aborted!"
-		echo "\nNote: If you wish to preform partition install.\nPlease specify the disk drive node first then select \"2\" for partition install."
+		echo "\nNote: If you wish to perform partitioned installation,\nPlease specify the disk drive node first then select \"2\" for partition install."
 		exit 1
 	fi
 	echo "\nChoose your partitioning type:"
-	install=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Erase entire drive" \2 "Install alongside existing OS/Partition (Requires at least 50 GB of free space from the end)"  --width=700 --height=220)
+	install=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Erase entire drive" \2 "Install alongside existing OS/Partition (Requires at least 50 GB of FREE and UNFORMATTED space from the end)"  --width=700 --height=220)
 	if [[ -n "$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" ]]; then
-		HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="A HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
+		HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
+		if [[ "$HOME_REUSE_TYPE" == "2"]]; then
 		mkdir -p /tmp/home
 		mount $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1) /tmp/home
+		mkdir -p /tmp/rootpart
+		mount $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1) /tmp/rootpart
 			if [[ -d "/tmp/home/.steamos" ]]; then
 				echo "Migration data found. Proceeding"
 				umount -l $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)
+				HOLOUSER=$(cat /tmp/rootpart/etc/passwd | grep home | cut -d ':' -f 1)
+				MIGRATEDINSTALL="1"
+				umount -l $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1)
 			else
 					(
 					sleep 2
 					echo "10"
-					mkdir -p /tmp/rootpart
-					mount $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1) /tmp/rootpart
+					HOLOUSER=$(cat /tmp/rootpart/etc/passwd | grep home | cut -d ':' -f 1)
+					MIGRATEDINSTALL="1"
 					mkdir -p /tmp/home/.steamos/ /tmp/home/.steamos/offload/opt /tmp/home/.steamos/offload/root /tmp/home/.steamos/offload/srv /tmp/home/.steamos/offload/usr/lib/debug /tmp/home/.steamos/offload/usr/local /tmp/home/.steamos/offload/var/lib/flatpak /tmp/home/.steamos/offload/var/cache/pacman /tmp/home/.steamos/offload/var/lib/docker /tmp/home/.steamos/offload/var/lib/systemd/coredump /tmp/home/.steamos/offload/var/log /tmp/home/.steamos/offload/var/tmp
 					echo "15" ; sleep 1
 					mv /tmp/rootpart/opt/* /tmp/home/.steamos/offload/opt
@@ -83,10 +89,11 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 					rsync -axHAWXS --numeric-ids --info=progress2 --no-inc-recursive /tmp/rootpart/var/lib/flatpak /tmp/home/.steamos/offload/var/lib/ |    tr '\r' '\n' |    awk '/^ / { print int(+$2) ; next } $0 { print "# " $0 }'
 					echo "Finished."
 					) |
-					zenity --progress --title="Preparing to reuse home at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" --text="Starting to move following directories to target offload:\n\n- /opt\n- /root\n- /srv\n- /usr/lib/debug\n- /usr/local\n- /var/cache/pacman\n- /var/lib/docker\n- /var/lib/systemd/coredump\n- /var/log\n- /var/tmp\n" --width=500 --no-cancel --percentage=0 --auto-close
+					zenity --progress --title="Preparing to reuse home at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" --text="Your installation will reuse following user: ${HOLOUSER} \n\nStarting to move following directories to target offload:\n\n- /opt\n- /root\n- /srv\n- /usr/lib/debug\n- /usr/local\n- /var/cache/pacman\n- /var/lib/docker\n- /var/lib/systemd/coredump\n- /var/log\n- /var/tmp\n" --width=500 --no-cancel --percentage=0 --auto-close
 					umount -l $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)
 					umount -l $(sudo blkid | grep holo-root | cut -d ':' -f 1 | head -n 1)
 				fi
+		fi
 	fi
 	# Setup password for root
 	while true; do
@@ -105,6 +112,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	done
 	# Create user
 	NAME_REGEX="^[a-z][-a-z0-9_]*\$"
+	if [[ "$MIGRATEDINSTALL" -ne "1" ]]; then
 	while true; do
 		HOLOUSER=$(zenity --entry --title="Account creation" --text "Enter username for this installation:")
 		if [ $HOLOUSER = "root" ]; then
@@ -119,6 +127,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 			break
 		fi
 	done
+	fi
 	# Setup password for user
 	while true; do
 		HOLOPASS=$(zenity --forms --title="Account configuration" --text="Set password for $HOLOUSER" --add-password="Password for user $HOLOUSER")
@@ -226,7 +235,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	# If the available storage is less than 64GB, don't create /home.
 	# If the boot device is mmcblk0, don't create an ext4 partition or it will break steamOS versions
 	# released after May 20.
-	if [ $diskSpace -lt 64000000 ] || [[ "${DEVICE}" =~ mmcblk0 ]]; then
+	if [[ "${DEVICE}" =~ mmcblk0 ]]; then
 		parted ${DEVICE} mkpart primary btrfs ${rootStart}M 100%
 	else
 		parted ${DEVICE} mkpart primary btrfs ${rootStart}M ${rootEnd}M
@@ -276,11 +285,13 @@ base_os_install() {
 	fi
     rsync -axHAWXS --numeric-ids --info=progress2 --no-inc-recursive / ${HOLO_INSTALL_DIR} |    tr '\r' '\n' |    awk '/^ / { print int(+$2) ; next } $0 { print "# " $0 }' | zenity --progress --title="Installing base OS..." --text="Bootstrapping root filesystem...\nThis may take more than 10 minutes.\n" --width=500 --no-cancel --auto-close
 	arch-chroot ${HOLO_INSTALL_DIR} install -Dm644 "$(find /usr/lib | grep vmlinuz | grep neptune)" "/boot/vmlinuz-$(cat /usr/lib/modules/*neptune*/pkgbase)"
+	arch-chroot ${HOLO_INSTALL_DIR} rm /etc/polkit-1/rules.d/99_holoiso_installuser.rules
 	cp -r /etc/holoinstall/post_install/pacman.conf ${HOLO_INSTALL_DIR}/etc/pacman.conf
 	arch-chroot ${HOLO_INSTALL_DIR} pacman-key --init
-    arch-chroot ${HOLO_INSTALL_DIR} pacman -Rdd --noconfirm mkinitcpio-archiso
+    arch-chroot ${HOLO_INSTALL_DIR} pacman -Rdd --noconfirm $(cat /etc/holoinstall/post_install/kernel_list.bootstrap)
 	arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
-    arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs | grep pkg.tar.zst)
+    arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/kernels | grep pkg.tar.zst)
+
 	arch-chroot ${HOLO_INSTALL_DIR} userdel -r liveuser
 	check_download $? "installing base package"
 	sleep 2
@@ -296,22 +307,24 @@ base_os_install() {
     echo "Configuring first boot user accounts..."
 	rm ${HOLO_INSTALL_DIR}/etc/skel/Desktop/*
     arch-chroot ${HOLO_INSTALL_DIR} rm /etc/sddm.conf.d/* 
-	mv /etc/holoinstall/post_install_shortcuts/steam.desktop /etc/holoinstall/post_install_shortcuts/desktopshortcuts.desktop ${HOLO_INSTALL_DIR}/etc/xdg/autostart
+	mv /etc/holoinstall/post_install_shortcuts/steam.desktop ${HOLO_INSTALL_DIR}/etc/xdg/autostart
     mv /etc/holoinstall/post_install_shortcuts/steamos-gamemode.desktop ${HOLO_INSTALL_DIR}/etc/skel/Desktop	
 	echo "\nCreating user ${HOLOUSER}..."
 	echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd root
 	arch-chroot ${HOLO_INSTALL_DIR} useradd --create-home ${HOLOUSER}
 	echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${HOLO_INSTALL_DIR} passwd ${HOLOUSER}
-	echo "${HOLOUSER} ALL=(root) NOPASSWD:ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
+	echo "${HOLOUSER} ALL=(ALL) ALL" > ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 	chmod 0440 ${HOLO_INSTALL_DIR}/etc/sudoers.d/${HOLOUSER}
 	echo "127.0.1.1    ${HOLOHOSTNAME}" >> ${HOLO_INSTALL_DIR}/etc/hosts
 	sleep 1
-	clear
+	clear 
 
 	echo "\nInstalling bootloader..."
 	mkdir -p ${HOLO_INSTALL_DIR}/boot/efi
 	mount -t vfat ${efi_partition} ${HOLO_INSTALL_DIR}/boot/efi
 	arch-chroot ${HOLO_INSTALL_DIR} holoiso-grub-update
+	mount -o remount,rw -t efivarfs efivarfs /sys/firmware/efi/efivars
+	arch-chroot ${HOLO_INSTALL_DIR} efibootmgr -c -d ${DEVICE} -p ${efiPartNum} -L "HoloISO" -l '\EFI\BOOT\BOOTX64.efi'
 	sleep 1
 	clear
 }
@@ -326,18 +339,41 @@ full_install() {
 		arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs_addon | grep linux-firmware-neptune)
 		arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
 	fi
+
+	mv /etc/holoinstall/post_install/amd-perf-fix "${HOLO_INSTALL_DIR}"/usr/bin/amd-perf-fix
+	chmod +x "${HOLO_INSTALL_DIR}"/usr/bin/amd-perf-fix
+	
+	# if [[ -n "$(lspci -nn | grep -i vga | grep -Po "10de:[a-z0-9]{4}")" ]]; then
+	# 	echo "NVIDIA GPU detected. Installing NVIDIA Drivers."
+	# 	arch-chroot ${HOLO_INSTALL_DIR} pacman -U --noconfirm $(find /etc/holoinstall/post_install/pkgs/nv | grep pkg.tar.zst)
+	# 	arch-chroot ${HOLO_INSTALL_DIR} mkinitcpio -P
+	# fi
 	echo "\nConfiguring Steam Deck UI by default..."		
     ln -s /usr/share/applications/steam.desktop ${HOLO_INSTALL_DIR}/etc/skel/Desktop/steam.desktop
 	echo -e "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop\nRelogin=true\n\n[X11]\n# Janky workaround for wayland sessions not stopping in sddm, kills\n# all active sddm-helper sessions on teardown\nDisplayStopCommand=/usr/bin/gamescope-wayland-teardown-workaround" >> ${HOLO_INSTALL_DIR}/etc/sddm.conf.d/autologin.conf
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G rfkill ${HOLOUSER}
 	arch-chroot ${HOLO_INSTALL_DIR} usermod -a -G wheel ${HOLOUSER}
 	echo "Preparing Steam OOBE..."
+	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} mkdir -p ~/.local/share/Steam
+	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} tar xf /usr/lib/steam/bootstraplinux_ubuntu12_32.tar.xz -C ~/.local/share/Steam
+	arch-chroot ${HOLO_INSTALL_DIR} sudo -u ${HOLOUSER} touch ~/.steam/steam/.cef-enable-remote-debugging
 	arch-chroot ${HOLO_INSTALL_DIR} touch /etc/holoiso-oobe
 	echo "Cleaning up..."
 	cp /etc/skel/.bashrc ${HOLO_INSTALL_DIR}/home/${HOLOUSER}
     arch-chroot ${HOLO_INSTALL_DIR} rm -rf /etc/holoinstall
+	arch-chroot ${HOLO_INSTALL_DIR} systemctl enable amd-perf-fix
+	sudo rm -rf ${HOLO_INSTALL_DIR}/etc/sudoers.d/g_wheel
+	sudo rm -rf ${HOLO_INSTALL_DIR}/etc/sudoers.d/liveuser
 	sleep 1
 	clear
+	if zenity --question --text="Would you like to have a 2GB Swap?"
+	then 
+    	arch-chroot ${HOLO_INSTALL_DIR} dd if=/dev/zero of=/home/.steamos/swapfile bs=1M count=2k status=progress
+		arch-chroot ${HOLO_INSTALL_DIR} chmod 0600 /home/.steamos/swapfile
+		arch-chroot ${HOLO_INSTALL_DIR} mkswap -U clear /home/.steamos/swapfile
+		arch-chroot ${HOLO_INSTALL_DIR} swapon /home/.steamos/swapfile
+		arch-chroot ${HOLO_INSTALL_DIR} echo -e "/home/.steamos/swapfile none swap defaults 0 0" >> /etc/fstab
+	fi
 }
 
 
