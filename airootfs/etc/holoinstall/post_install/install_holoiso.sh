@@ -54,7 +54,7 @@ xargs -0 zenity --list --width=600 --height=512 --title="Select disk" --text="Se
 	install=$(zenity --list --title="Choose your installation type:" --column="Type" --column="Name" 1 "Erase entire drive" \2 "Install alongside existing OS/Partition (Requires at least 50 GB of FREE and UNFORMATTED space from the end)"  --width=700 --height=220)
 	if [[ -n "$(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1)" ]]; then
 		HOME_REUSE_TYPE=$(zenity --list --title="Warning" --text="HoloISO home partition was detected at $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1). Please select an appropriate action below:" --column="Type" --column="Name" 1 "Format it and start over" \2 "Reuse partition"  --width=500 --height=220)
-		if [[ "$HOME_REUSE_TYPE" == "2"]]; then
+		if [[ "$HOME_REUSE_TYPE" == "2" ]]; then
 		mkdir -p /tmp/home
 		mount $(sudo blkid | grep holo-home | cut -d ':' -f 1 | head -n 1) /tmp/home
 		mkdir -p /tmp/rootpart
@@ -372,7 +372,7 @@ full_install() {
 		arch-chroot ${HOLO_INSTALL_DIR} chmod 0600 /home/.steamos/swapfile
 		arch-chroot ${HOLO_INSTALL_DIR} mkswap -U clear /home/.steamos/swapfile
 		arch-chroot ${HOLO_INSTALL_DIR} swapon /home/.steamos/swapfile
-		arch-chroot ${HOLO_INSTALL_DIR} echo -e "/home/.steamos/swapfile none swap defaults 0 0" >> /etc/fstab
+		echo -e "/home/.steamos/swapfile none swap defaults 0 0" >> ${HOLO_INSTALL_DIR}/etc/fstab
 	fi
 }
 
