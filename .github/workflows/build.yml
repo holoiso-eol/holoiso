@@ -1,0 +1,45 @@
+name: Build ISO
+
+on:
+  push:
+      paths-ignore:
+      - '**.md'
+  pull_request:
+        paths-ignore:
+        - '**.md'
+  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: thevakhovske/holoiso:latest
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Sanity check, if we are on SteamOS environment
+        run: |
+          cat /etc/os-release          
+      
+      - name: Install ArchISO
+        run: |
+          pacman -Sy
+          pacman --noconfirm -S git archiso
+
+      - name: Build ISO File
+        run: |
+          cp mkarchiso-holoiso /usr/bin
+          chmod +x /usr/bin/mkarchiso-holoiso
+          mkarchiso-holoiso -v .
+          find out/
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: holoiso
+          path: out/*.iso
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: holoiso-misc-data
+          path: ./*.pacman
