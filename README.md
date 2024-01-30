@@ -1,3 +1,11 @@
+# All work is being done on: https://github.com/holoiso-staging/releases. This version is completely EOL and is no longer supported.
+
+
+
+
+
+
+
 [![Build ISO](https://github.com/theVakhovskeIsTaken/holoiso/actions/workflows/build.yml/badge.svg)](https://github.com/theVakhovskeIsTaken/holoiso/actions/workflows/build.yml)
 
 ![image](https://user-images.githubusercontent.com/97450182/167457908-07be1a60-7e86-4bef-b7f0-6bd19efd8b24.png)
